@@ -8,6 +8,11 @@ import Search from './components/Search';
 import Welcome from './components/Welcome';
 import CreateChannel from './components/createChannel';
 import firebase from './firebase';
+import { MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from 'mdbreact';
+
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import 'bootstrap-css-only/css/bootstrap.min.css';
+import 'mdbreact/dist/css/mdb.css';
 
 import './App.css';
 
@@ -16,6 +21,7 @@ const Main = ({ user: { user, currentContact }, signout }) => {
   //const [search, setSearch] = useState('');
   const [filteredContacts, setFilterContacts] = useState([]);
   const [channelsRef] = useState(firebase.database().ref('channels'));
+  const [isCreateChannelModalOpen, setCreateChannelModalVisibility] = useState(false);
 
   useEffect(() => {
     addListeners();
@@ -27,36 +33,31 @@ const Main = ({ user: { user, currentContact }, signout }) => {
     });
   };
 
+  const toggleCreateChannelModalVisibility = () => setCreateChannelModalVisibility((v) => !v);
+
   return (
     user && (
       <div className='app'>
-        <CreateChannel user={user} /> {/*Modal */}
+        <CreateChannel
+          user={user}
+          isOpen={isCreateChannelModalOpen}
+          toggleVisibility={toggleCreateChannelModalVisibility}
+        />{' '}
+        {/*Modal */}
         <aside>
           <header>
             <Avatar user={user} showName />
-            <div className='dropdown'>
-              <a className='dropdown-toggle' id='dropdownMenuButton' data-toggle='dropdown' aria-expanded='false'>
-                I
-              </a>
-              <ul className='dropdown-menu' aria-labelledby='dropdownMenuButton'>
-                <li>
-                  <span className='dropdown-item'>Add friend</span>
-                </li>
-                <li>
-                  <span className='dropdown-item' data-toggle='modal' data-target='#CreateChannelModal'>
-                    Create Channel
-                  </span>
-                </li>
-                <li>
-                  <span className='dropdown-item'>Join Channel</span>
-                </li>
-                <li>
-                  <span className='dropdown-item' onClick={(e) => signout(e)}>
-                    Logout
-                  </span>
-                </li>
-              </ul>
-            </div>
+            <MDBDropdown>
+              <MDBDropdownToggle style={{ padding: '5px 7px', margin: 0 }}>I</MDBDropdownToggle>
+              <MDBDropdownMenu basic>
+                <MDBDropdownItem>Profile</MDBDropdownItem>
+                <MDBDropdownItem>Add Friend</MDBDropdownItem>
+                <MDBDropdownItem>Join Channel</MDBDropdownItem>
+                <MDBDropdownItem onClick={() => toggleCreateChannelModalVisibility()}>Create Channel</MDBDropdownItem>
+                <MDBDropdownItem divider />
+                <MDBDropdownItem onClick={(e) => signout(e)}>Logout</MDBDropdownItem>
+              </MDBDropdownMenu>
+            </MDBDropdown>
           </header>
           <Search />
           <div className='contact-boxes'>

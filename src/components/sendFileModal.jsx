@@ -1,47 +1,40 @@
 import React, { useState } from 'react';
+import { MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter } from 'mdbreact';
 
-const SenfFileModal = ({ file, setFile, uploadFile }) => {
+const SenfFileModal = ({ file, setFile, uploadFile, isOpen, toggleModal }) => {
   return (
-    <div className='modal fade' id='sendFileModal' tabIndex='-1' aria-labelledby='sendFileModal' aria-hidden='true'>
-      <div className='modal-dialog'>
-        <div className='modal-content'>
-          <div className='modal-header'>
-            <h5 className='modal-title' id='sendFileTitle'>
-              Choose File
-            </h5>
-            <button type='button' className='btn-close' data-dismiss='modal' aria-label='Close'></button>
+    <MDBModal isOpen={isOpen} toggle={toggleModal} centered>
+      <MDBModalHeader toggle={toggleModal}>Choose File</MDBModalHeader>
+      <MDBModalBody>
+        <div className='input-group'>
+          <div className='input-group-prepend'>
+            <span className='input-group-text' id='inputGroupFileAddon01'>
+              Upload
+            </span>
           </div>
-          <div className='modal-body'>
-            <div className='input-group mb-3'>
-              <span className='input-group-text' id='inputGroupFileAddon01'>
-                Upload
-              </span>
-              <div className='form-file'>
-                <input
-                  type='file'
-                  className='form-file-input'
-                  id='sendFileInput'
-                  aria-describedby='inputGroupFileAddon01'
-                  onChange={(e) => setFile(e.target.files[0])}
-                />
-                <label className='form-file-label' htmlFor='sendFileInput'>
-                  <span className='form-file-text'>{file ? file.name : 'Choose File...'}</span>
-                  <span className='form-file-button'>Browse</span>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div className='modal-footer'>
-            <button type='button' className='btn btn-secondary' data-dismiss='modal'>
-              Close
-            </button>
-            <button type='button' className='btn btn-primary' onClick={(e) => uploadFile(e)}>
-              Send
-            </button>
+          <div className='custom-file'>
+            <input
+              type='file'
+              className='custom-file-input'
+              id='uploadModal'
+              aria-describedby='inputGroupFileAddon01'
+              onChange={(e) => setFile(e.target.files[0])}
+            />
+            <label className='custom-file-label' htmlFor='uploadModal'>
+              {file ? file.name : 'Choose file...'}
+            </label>
           </div>
         </div>
-      </div>
-    </div>
+      </MDBModalBody>
+      <MDBModalFooter>
+        <MDBBtn color='secondary' onClick={toggleModal}>
+          Close
+        </MDBBtn>
+        <MDBBtn color='primary' onClick={(e) => uploadFile(e)}>
+          Send
+        </MDBBtn>
+      </MDBModalFooter>
+    </MDBModal>
   );
 };
 

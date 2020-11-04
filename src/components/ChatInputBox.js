@@ -6,7 +6,7 @@ import micIcon from '../assets/mic.svg';
 import sendIcon from '../assets/send.svg';
 import firebase from '../firebase';
 import { connect } from 'react-redux';
-import SenfFileModal from './sendFileModal';
+import SendFileModal from './sendFileModal';
 
 const ChatInputBox = ({ user: { currentContact, user } }) => {
   const [uploadDetails, setUploadDetails] = useState({
@@ -18,15 +18,26 @@ const ChatInputBox = ({ user: { currentContact, user } }) => {
   const [messagesRef] = useState(firebase.database().ref('messages'));
   const [storageRef] = useState(firebase.storage().ref());
   const [msg, setMsg] = useState('');
-  const sendMsg = async (e) => {
-    e.preventDefault();
-    if (!msg.trim()) return;
-    await messagesRef.child(currentContact.id).push().set({
-      message: msg,
-      user: user.uid,
-      timestamp: firebase.database.ServerValue.TIMESTAMP,
-    });
-    setMsg('');
+  const [isUploadModalOpen, setUploadModalVisibility] = useState(false);
+  const sendMsg = async (fileURL = '') => {
+    try {
+      if (!fileURL && !msg.trim()) return;
+      if (fileURL != '')
+        await messagesRef.child(currentContact.id).push().set({
+          fileURL: fileURL,
+          user: user.uid,
+          timestamp: firebase.database.ServerValue.TIMESTAMP,
+        });
+      else
+        await messagesRef.child(currentContact.id).push().set({
+          message: msg,
+          user: user.uid,
+          timestamp: firebase.database.ServerValue.TIMESTAMP,
+        });
+      setMsg('');
+    } catch (err) {
+      console.log(err);
+    }
   };
   useEffect(() => {
     if (uploadDetails.uploadTask != null) {
@@ -44,7 +55,7 @@ const ChatInputBox = ({ user: { currentContact, user } }) => {
         (err) => console.log(err),
         () => {
           uploadDetails.uploadTask.snapshot.ref.getDownloadURL().then((url) => {
-            sendFileMessage(url, ref, pathToUpload);
+            sendFileMessage(url);
           });
         }
       );
@@ -65,17 +76,28 @@ const ChatInputBox = ({ user: { currentContact, user } }) => {
     }
   };
 
-  const sendFileMessage = (url, ref, pathToUpload) => {
+  const sendFileMessage = (url) => {
     console.log(url);
     setFile(null);
+    toggleUploadModalVisibility();
+    sendMsg(url);
   };
+
+  const toggleUploadModalVisibility = () => setUploadModalVisibility((v) => !v);
+
   return (
     <div className='chat-input-box'>
-      <SenfFileModal file={file} setFile={setFile} uploadFile={uploadFile} />
+      <SendFileModal
+        file={file}
+        setFile={setFile}
+        uploadFile={uploadFile}
+        isOpen={isUploadModalOpen}
+        toggleModal={toggleUploadModalVisibility}
+      />
       <div className='icon emoji-selector'>
         <img src={emojiIcon} alt='' />
       </div>
-      <div className='icon emoji-selector' data-toggle='modal' data-target='#sendFileModal'>
+      <div className='icon emoji-selector' onClick={() => toggleUploadModalVisibility()}>
         <img src={emojiIcon} alt='' />
       </div>
       <div className='chat-input'>
@@ -84,11 +106,11 @@ const ChatInputBox = ({ user: { currentContact, user } }) => {
           placeholder='Type a message'
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
-          onKeyPress={(e) => (e.key === 'Enter' ? sendMsg(e) : null)}
+          onKeyPress={(e) => (e.key === 'Enter' ? sendMsg() : null)}
         />
       </div>
 
-      <div className='icon send' onClick={(e) => sendMsg(e)}>
+      <div className='icon send' onClick={() => sendMsg()}>
         <img src={sendIcon} alt='' />
       </div>
     </div>
