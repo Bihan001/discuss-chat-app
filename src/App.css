@@ -1,0 +1,238 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+    max-height: 100vh;
+}
+
+aside {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    width: 70%;
+    background: #e5ddd5;
+    background-image: url(./assets/chatbg.png);
+    display: flex;
+    flex-direction: column;
+    background-size: contain;
+}
+
+.chats {
+    flex: 1;
+    padding: 0 2rem;
+    overflow-y: auto;
+}
+
+.avatar {
+    height: 2rem;
+    border-radius: 50%;
+    margin: 0 0.75rem 0 0;
+}
+
+.search {
+    height: 2.75rem;
+    background: #f7f7f7;
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
+}
+
+.search input[type='text'] {
+    background-image: url(./assets/search.svg);
+    background-repeat: no-repeat;
+    background-size: 1rem, 1rem;
+    background-position: 0.45rem 0.35rem;
+    padding-left: 2rem;
+}
+.contact-boxes {
+    overflow-y: auto;
+    flex: 1;
+}
+.contact-box {
+    background: #fff;
+
+    padding: 0.75rem 0.75rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.contact-box:hover,
+.contact-box.active {
+    background: #ebebeb;
+}
+
+main header,
+aside header {
+    background: #ededed;
+    height: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+main header {
+    justify-content: flex-start;
+    padding: 0 1rem;
+}
+
+.time-mark {
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 12px;
+}
+.text {
+    color: rgba(0, 0, 0, 0.8);
+    font-size: 13px;
+}
+
+.avatar-title {
+    color: #000;
+    font-size: 16px;
+    font-weight: normal;
+}
+.avatar-component {
+    display: flex;
+    align-items: center;
+}
+.right-section {
+    width: 100%;
+}
+.contact-box-header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 0.25rem;
+}
+.icon-small {
+    width: 0.85rem;
+    margin: 0 0.25rem;
+}
+.last-msg {
+    display: flex;
+    align-items: flex-end;
+}
+.chat-input-box {
+    display: flex;
+    height: 3.5rem;
+    align-items: center;
+    background: #f0f0f0;
+    justify-content: space-between;
+}
+
+aside header {
+    padding: 0 0.75rem;
+    border-right: 1px solid #e1e1e1;
+}
+
+.icon {
+    width: 0.75rem;
+    margin: 0 0.5rem;
+    cursor: pointer;
+}
+#statusIcon {
+    width: 1.25rem;
+}
+input {
+    border: none;
+    border-radius: 1rem;
+    width: 100%;
+    padding: 0.5rem 1rem;
+}
+
+.chat-input input {
+    height: 2rem;
+}
+input:focus {
+    outline: none;
+}
+
+.emoji-selector {
+    width: 5%;
+    text-align: center;
+}
+.chat-input {
+    width: 90%;
+}
+.send {
+    width: 5%;
+    text-align: center;
+}
+
+.message {
+    color: #000;
+    clear: both;
+    line-height: 18px;
+    font-size: 15px;
+    padding: 8px;
+    position: relative;
+    margin: 8px 0;
+    max-width: 60%;
+    word-wrap: break-word;
+}
+
+.message::before {
+    position: absolute;
+    left: -10px;
+    top: 0;
+    content: '';
+    display: block;
+    border: solid;
+    border-width: 0px 16px 16px 0px;
+    border-color: transparent;
+    border-right-color: #fff;
+}
+.message.received {
+    background: #fff;
+    border-radius: 0px 5px 5px 5px;
+    float: left;
+}
+.message.sent::before {
+    left: auto;
+    right: -28px;
+    border-width: 0px 16px 16px 16px;
+    border-color: transparent;
+    border-left-color: #e1ffc7;
+}
+
+.message.sent {
+    background: #e1ffc7;
+    border-radius: 5px 0px 5px 5px;
+    float: right;
+}
+
+.welcome {
+    background: #f8f9fa;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.welcome h2 {
+    margin-top: 2rem;
+    font-weight: normal;
+}
+.welcome img {
+    width: 300px;
+}
+
+.metadata {
+    float: right;
+    padding: 0 0 0 7px;
+    position: relative;
+    bottom: -4px;
+}
+
+.metadata .date {
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 11px;
+    display: inline-block;
+}
