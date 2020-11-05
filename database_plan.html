@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Database Plan</title>
+  </head>
+  <body>
+    <ul>
+      <h2>Users</h2>
+      <ul>
+        <li>
+          <b>user_id</b>
+          <ul>
+            <li>name</li>
+            <li>avatar</li>
+            <li>friends []</li>
+            <li>
+              channels
+              <ul>
+                <li>
+                  channel_id
+                  <ul>
+                    <li>key: channel_id</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <h2>Channels</h2>
+      <ul>
+        <li>
+          <b>channel_id</b>
+          <ul>
+            <li>id</li>
+            <li>name</li>
+            <li>description</li>
+            <li>users []</li>
+            <li>createdBy</li>
+            <li>dateCreated</li>
+          </ul>
+        </li>
+      </ul>
+      <h2>Messages</h2>
+      <ul>
+        <li>
+          <b>channel_id</b>
+          <ul>
+            <li>
+              <b>message_id</b>
+              <ul>
+                <li>message</li>
+                <li>fileURL</li>
+                <li>timestamp</li>
+                <li>user</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <h2>Private Messages</h2>
+      <ul>
+        <li>
+          <b>channel_id</b>
+          <ul>
+            <li>
+              <b>message_id</b>
+              <ul>
+                <li>message</li>
+                <li>fileURL</li>
+                <li>timestamp</li>
+                <li>user</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <h2>Presence</h2>
+      <ul>
+        <li>user_id</li>
+      </ul>
+    </ul>
+  </body>
+</html>

@@ -6,6 +6,7 @@ const CreateChannel = ({ user, isOpen, toggleVisibility }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [channelsRef] = useState(firebase.database().ref('channels'));
+  const [usersRef] = useState(firebase.database().ref('users'));
   const createChannel = async (e) => {
     try {
       e.preventDefault();
@@ -15,10 +16,23 @@ const CreateChannel = ({ user, isOpen, toggleVisibility }) => {
         id: key,
         name: name,
         description: description,
+        users: [user.uid],
         createdBy: user.uid,
         dateCreated: firebase.database.ServerValue.TIMESTAMP,
       };
       await channelsRef.child(key).update(newGroup);
+      //await channelsRef.child(key).child('users').child(user.uid).set({ key: user.uid });
+      // await usersRef.child(user.uid).child('channels').child(key).set({ key });
+      let snap = await usersRef.child(user.uid).once('value');
+      let snapUser = snap.val();
+      if (snapUser.channels) {
+        if (!snapUser.channels.includes(key)) {
+          snapUser.channels.push(key);
+        }
+      } else {
+        snapUser.channels = [key];
+      }
+      await usersRef.child(user.uid).update(snapUser);
       setName('');
       setDescription('');
       toggleVisibility();
