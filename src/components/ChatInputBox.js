@@ -7,6 +7,7 @@ import sendIcon from '../assets/send.svg';
 import firebase from '../firebase';
 import { connect } from 'react-redux';
 import SendFileModal from './sendFileModal';
+import ProgressBar from './progressBar';
 
 const ChatInputBox = ({ user: { currentContact, user } }) => {
   const [uploadDetails, setUploadDetails] = useState({
@@ -79,40 +80,45 @@ const ChatInputBox = ({ user: { currentContact, user } }) => {
   const sendFileMessage = (url) => {
     console.log(url);
     setFile(null);
-    toggleUploadModalVisibility();
+    setUploadDetails({ ...uploadDetails, uploadState: 'done' });
+    //toggleUploadModalVisibility();
+    setUploadModalVisibility(false);
     sendMsg(url);
   };
 
   const toggleUploadModalVisibility = () => setUploadModalVisibility((v) => !v);
 
   return (
-    <div className='chat-input-box'>
-      <SendFileModal
-        file={file}
-        setFile={setFile}
-        uploadFile={uploadFile}
-        isOpen={isUploadModalOpen}
-        toggleModal={toggleUploadModalVisibility}
-      />
-      <div className='icon emoji-selector'>
-        <img src={emojiIcon} alt='' />
-      </div>
-      <div className='icon emoji-selector' onClick={() => toggleUploadModalVisibility()}>
-        <img src={emojiIcon} alt='' />
-      </div>
-      <div className='chat-input'>
-        <input
-          type='text'
-          placeholder='Type a message'
-          value={msg}
-          onChange={(e) => setMsg(e.target.value)}
-          onKeyPress={(e) => (e.key === 'Enter' ? sendMsg() : null)}
+    <div>
+      <div className='chat-input-box'>
+        <SendFileModal
+          file={file}
+          setFile={setFile}
+          uploadFile={uploadFile}
+          isOpen={isUploadModalOpen}
+          toggleModal={toggleUploadModalVisibility}
         />
-      </div>
+        <div className='icon emoji-selector'>
+          <img src={emojiIcon} alt='' />
+        </div>
+        <div className='icon emoji-selector' onClick={() => toggleUploadModalVisibility()}>
+          <img src={emojiIcon} alt='' />
+        </div>
+        <div className='chat-input'>
+          <input
+            type='text'
+            placeholder='Type a message'
+            value={msg}
+            onChange={(e) => setMsg(e.target.value)}
+            onKeyPress={(e) => (e.key === 'Enter' ? sendMsg() : null)}
+          />
+        </div>
 
-      <div className='icon send' onClick={() => sendMsg()}>
-        <img src={sendIcon} alt='' />
+        <div className='icon send' onClick={() => sendMsg()}>
+          <img src={sendIcon} alt='' />
+        </div>
       </div>
+      <ProgressBar uploadState={uploadDetails.uploadState} uploadPercent={uploadDetails.uploadPercentage} />
     </div>
   );
 };
