@@ -16,13 +16,23 @@ const ChatInputBox = ({ user: { currentContact, user } }) => {
     uploadPercentage: 0,
   });
   const [file, setFile] = useState(null);
-  const [messagesRef] = useState(firebase.database().ref('messages'));
+  const [messagesRef, setMessagesRef] = useState(null);
   const [storageRef] = useState(firebase.storage().ref());
   const [msg, setMsg] = useState('');
   const [isUploadModalOpen, setUploadModalVisibility] = useState(false);
+
+  useEffect(() => {
+    if (currentContact.isPrivate) {
+      setMessagesRef(firebase.database().ref('private_messages'));
+    } else {
+      setMessagesRef(firebase.database().ref('messages'));
+    }
+  }, [currentContact]);
+
   const sendMsg = async (fileURL = '') => {
     try {
       if (!fileURL && !msg.trim()) return;
+      setMsg('');
       if (fileURL != '')
         await messagesRef.child(currentContact.id).push().set({
           fileURL: fileURL,
@@ -35,15 +45,13 @@ const ChatInputBox = ({ user: { currentContact, user } }) => {
           user: user.uid,
           timestamp: firebase.database.ServerValue.TIMESTAMP,
         });
-      setMsg('');
     } catch (err) {
       console.log(err);
     }
   };
+
   useEffect(() => {
     if (uploadDetails.uploadTask != null) {
-      const pathToUpload = currentContact.id;
-      const ref = messagesRef;
       uploadDetails.uploadTask.on(
         'state_changed',
         (snap) => {
@@ -62,11 +70,14 @@ const ChatInputBox = ({ user: { currentContact, user } }) => {
       );
     }
   }, [uploadDetails.uploadTask]);
+
   const uploadFile = async (e) => {
     try {
       e.preventDefault();
       const metadata = { contentType: mime.lookup(file.name) };
-      const filepath = `chat/public/${uuidv4()}.${file.name.split('.').pop()}`;
+      const filepath = `chat/${currentContact.isPrivate ? currentContact.id : 'public'}/${uuidv4()}.${file.name
+        .split('.')
+        .pop()}`;
       setUploadDetails({
         ...uploadDetails,
         uploadState: 'uploading',
@@ -89,37 +100,39 @@ const ChatInputBox = ({ user: { currentContact, user } }) => {
   const toggleUploadModalVisibility = () => setUploadModalVisibility((v) => !v);
 
   return (
-    <div>
-      <div className='chat-input-box'>
-        <SendFileModal
-          file={file}
-          setFile={setFile}
-          uploadFile={uploadFile}
-          isOpen={isUploadModalOpen}
-          toggleModal={toggleUploadModalVisibility}
-        />
-        <div className='icon emoji-selector'>
-          <img src={emojiIcon} alt='' />
-        </div>
-        <div className='icon emoji-selector' onClick={() => toggleUploadModalVisibility()}>
-          <img src={emojiIcon} alt='' />
-        </div>
-        <div className='chat-input'>
-          <input
-            type='text'
-            placeholder='Type a message'
-            value={msg}
-            onChange={(e) => setMsg(e.target.value)}
-            onKeyPress={(e) => (e.key === 'Enter' ? sendMsg() : null)}
+    messagesRef && (
+      <div>
+        <div className='chat-input-box'>
+          <SendFileModal
+            file={file}
+            setFile={setFile}
+            uploadFile={uploadFile}
+            isOpen={isUploadModalOpen}
+            toggleModal={toggleUploadModalVisibility}
           />
-        </div>
+          <div className='icon emoji-selector'>
+            <img src={emojiIcon} alt='' />
+          </div>
+          <div className='icon emoji-selector' onClick={() => toggleUploadModalVisibility()}>
+            <img src={emojiIcon} alt='' />
+          </div>
+          <div className='chat-input'>
+            <input
+              type='text'
+              placeholder='Type a message'
+              value={msg}
+              onChange={(e) => setMsg(e.target.value)}
+              onKeyPress={(e) => (e.key === 'Enter' ? sendMsg() : null)}
+            />
+          </div>
 
-        <div className='icon send' onClick={() => sendMsg()}>
-          <img src={sendIcon} alt='' />
+          <div className='icon send' onClick={() => sendMsg()}>
+            <img src={sendIcon} alt='' />
+          </div>
         </div>
+        <ProgressBar uploadState={uploadDetails.uploadState} uploadPercent={uploadDetails.uploadPercentage} />
       </div>
-      <ProgressBar uploadState={uploadDetails.uploadState} uploadPercent={uploadDetails.uploadPercentage} />
-    </div>
+    )
   );
 };
 

@@ -31,7 +31,7 @@ const JoinChannel = ({ isOpen, toggleVisibility, updateChannels, user: { user } 
         snapUser.channels = [channelID];
       }
       await usersRef.child(user.uid).update(snapUser);
-      updateChannels();
+      //updateChannels(snapChannel);
       setChannelID('');
       toggleVisibility();
     } catch (err) {

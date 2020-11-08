@@ -14,10 +14,18 @@ export const clearUser = () => (dispatch) => {
   });
 };
 
-export const setCurrentContact = (contactID) => async (dispatch) => {
-  const snap = await firebase.database().ref('channels').child(contactID).once('value');
+export const setCurrentChannel = (contact) => async (dispatch) => {
+  //const snap = await firebase.database().ref('channels').child(contactID).once('value');
   dispatch({
     type: types.SET_CONTACT,
-    payload: snap.val(),
+    payload: contact,
+  });
+};
+
+export const setCurrentChatUser = (user) => async (dispatch) => {
+  // const snap = await firebase.database().ref('users').child(contactID).once('value');
+  dispatch({
+    type: types.SET_CONTACT,
+    payload: user,
   });
 };

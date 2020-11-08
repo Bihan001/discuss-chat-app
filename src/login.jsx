@@ -1,15 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { GoogleLoginButton } from 'react-social-login-buttons';
 
 const Login = (props) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   return (
-    <div>
-      <input type='email' placeholder='email' value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input type='password' placeholder='password' value={password} onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={(e) => props.register(email, password)}>Register</button>
-      <button onClick={(e) => props.signin(email, password)}>Sign in</button>
-      <button onClick={(e) => props.signout(e)}>Sign out</button>
+    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+      <h3 className='pb-3'>Welcone to Discuss</h3>
+      <GoogleLoginButton onClick={() => props.signin()} />
     </div>
   );
 };

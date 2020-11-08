@@ -19,33 +19,41 @@ const App = ({ user: { user }, setUser, clearUser }) => {
     });
   }, []);
 
-  const register = async (email, password) => {
-    try {
-      const createdUser = await firebase.auth().createUserWithEmailAndPassword(email, password);
-      if (createdUser) {
-        await createdUser.user.updateProfile({
-          displayName: 'NEW USER',
-          photoURL: 'https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg',
-        });
-        await usersRef.child(createdUser.user.uid).set({
-          name: createdUser.user.displayName,
-          avatar: createdUser.user.photoURL,
-        });
-        console.log(createdUser);
-        setUser(createdUser.user);
-      } else {
-        console.log('no user created');
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // const register = async (email, password) => {
+  //   try {
+  //     const createdUser = await firebase.auth().createUserWithEmailAndPassword(email, password);
+  //     if (createdUser) {
+  //       await createdUser.user.updateProfile({
+  //         displayName: 'NEW USER',
+  //         photoURL: 'https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg',
+  //       });
+  //       await usersRef.child(createdUser.user.uid).set({
+  //         name: createdUser.user.displayName,
+  //         avatar: createdUser.user.photoURL,
+  //       });
+  //       console.log(createdUser);
+  //       setUser(createdUser.user);
+  //     } else {
+  //       console.log('no user created');
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   const signin = async (email, password) => {
     try {
-      const signedinUser = await firebase.auth().signInWithEmailAndPassword(email, password);
-      setUser(signedinUser.user);
-      console.log(signedinUser);
+      // const signedinUser = await firebase.auth().signInWithEmailAndPassword(email, password);
+      // setUser(signedinUser.user);
+      var provider = new firebase.auth.GoogleAuthProvider();
+      var result = await firebase.auth().signInWithPopup(provider);
+      await usersRef.child(result.user.uid).update({
+        name: result.user.displayName,
+        avatar: result.user.photoURL,
+        email: result.user.email,
+      });
+      setUser(result.user);
+      console.log(result.user);
     } catch (err) {
       console.log(err);
     }
@@ -61,11 +69,7 @@ const App = ({ user: { user }, setUser, clearUser }) => {
     }
   };
 
-  return (
-    <Fragment>
-      {!user ? <Login register={register} signin={signin} signout={signout} /> : <Main signout={signout} />}
-    </Fragment>
-  );
+  return <Fragment>{!user ? <Login signin={signin} /> : <Main signout={signout} />}</Fragment>;
 };
 
 const mapDispatchToProps = (state) => ({

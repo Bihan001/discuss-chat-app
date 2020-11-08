@@ -13,12 +13,14 @@ export default function (state = initialState, action) {
       return {
         ...state,
         user: payload,
+        currentUser: null,
         loading: false,
       };
     case types.CLEAR_USER:
       return {
         ...state,
         user: null,
+        currentContact: null,
         loading: false,
       };
     case types.SET_CONTACT:
