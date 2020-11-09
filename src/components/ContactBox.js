@@ -33,7 +33,7 @@ const ContactBox = ({ contact, setCurrentChannel, setCurrentChatUser, messages, 
   const userView = (
     <div
       className={`contact-box ${currentContact && currentContact.id === contact.id ? 'active' : ''}`}
-      onClick={() => setCurrentChatUser(contact)}>
+      onClick={() => setCurrentChatUser(contact, user.uid)}>
       <Avatar user={contact} />
       <div className='right-section'>
         <div className='contact-box-header'>

@@ -22,8 +22,16 @@ export const setCurrentChannel = (contact) => async (dispatch) => {
   });
 };
 
-export const setCurrentChatUser = (user) => async (dispatch) => {
-  // const snap = await firebase.database().ref('users').child(contactID).once('value');
+export const setCurrentChatUser = (user, ownID) => async (dispatch) => {
+  // let ids = user.id.split('/');
+  // let otherID = '';
+  // if (ids[0] === ownID) otherID = ids[1];
+  // else otherID = ids[0];
+  // let snap = await firebase.database().ref('users').child(otherID).once('value');
+  // snap = snap.val();
+  // if (snap.status !== user.status) {
+  //   user.status = snap.status;
+  // }
   dispatch({
     type: types.SET_CONTACT,
     payload: user,

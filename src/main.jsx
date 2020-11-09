@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import { setCurrentChatUser } from './actions/user';
 import Avatar from './components/Avatar';
 import ContactBox from './components/ContactBox';
 import MessagesBox from './components/MessagesBox';
@@ -18,7 +19,9 @@ import 'mdbreact/dist/css/mdb.css';
 
 import './App.css';
 
-const Main = ({ user: { user, currentContact }, signout }) => {
+let listener = null;
+
+const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) => {
   //const [message, setMessage] = useState('');
   //const [search, setSearch] = useState('');
   const [filteredContacts, setFilterContacts] = useState([]);
@@ -27,11 +30,32 @@ const Main = ({ user: { user, currentContact }, signout }) => {
   const [isCreateChannelModalOpen, setCreateChannelModalVisibility] = useState(false);
   const [isJoinChannelModalOpen, setJoinChannelModalVisibility] = useState(false);
   const [isAddContactModalOpen, setAddContactModalVisibility] = useState(false);
+  const [connectedRef] = useState(firebase.database().ref('.info/connected'));
 
   useEffect(() => {
     //firebase.database().ref('users').child(user.uid).child('channels').child('-MLOZ3P2dQe8NEVv9-kS').remove();
     addListeners();
   }, []);
+
+  useEffect(() => {
+    if (listener) {
+      listener.off();
+      console.log('turned off status listener');
+    }
+    if (currentContact && currentContact.isPrivate) {
+      let ids = currentContact.id.split('/');
+      let otherID = '';
+      if (ids[0] === user.uid) otherID = ids[1];
+      else otherID = ids[0];
+      listener = usersRef.child(otherID);
+      listener.on('value', (snap) => {
+        let tmpContact = snap.val();
+        if (tmpContact.status !== currentContact.status) {
+          setCurrentChatUser({ ...currentContact, status: tmpContact.status });
+        }
+      });
+    }
+  }, [currentContact]);
 
   const addListeners = () => {
     // channelsRef.on('child_added', (snap) => {
@@ -78,6 +102,15 @@ const Main = ({ user: { user, currentContact }, signout }) => {
           });
         }
       });
+
+    connectedRef.on('value', async (snap) => {
+      const currentState = snap.val();
+      await usersRef.child(user.uid).update({
+        status: currentState ? 'online' : 'offline',
+      });
+    });
+
+    usersRef.child(user.uid).onDisconnect().update({ status: 'offline' });
   };
 
   const updateChannels = async (snapChannel) => {
@@ -171,7 +204,10 @@ const Main = ({ user: { user, currentContact }, signout }) => {
         {currentContact ? (
           <main>
             <header>
-              <Avatar user={currentContact} showName /> {/* Contact header on selected chat */}
+              <div>
+                <Avatar user={currentContact} showName /> {/* Contact header on selected chat */}
+                <p>{currentContact.isPrivate ? (currentContact.status === 'online' ? 'online' : 'offline') : null}</p>
+              </div>
             </header>
             {/* Chat box */}
             <MessagesBox />
@@ -189,4 +225,4 @@ const mapStateToProps = (state) => ({
   user: state.user,
 });
 
-export default connect(mapStateToProps, null)(Main);
+export default connect(mapStateToProps, { setCurrentChatUser })(Main);

@@ -51,6 +51,7 @@ const App = ({ user: { user }, setUser, clearUser }) => {
         name: result.user.displayName,
         avatar: result.user.photoURL,
         email: result.user.email,
+        status: 'online',
       });
       setUser(result.user);
       console.log(result.user);
@@ -62,6 +63,7 @@ const App = ({ user: { user }, setUser, clearUser }) => {
   const signout = async (e) => {
     try {
       e.preventDefault();
+      await firebase.database().ref('users').child(user.uid).update({ status: 'offline' });
       await firebase.auth().signOut();
       clearUser();
     } catch (err) {
