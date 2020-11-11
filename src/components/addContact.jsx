@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter } from 'mdbreact';
 import { connect } from 'react-redux';
 import firebase from '../firebase';
-const AddContact = ({ isOpen, toggleVisibility, updateContacts, user: { user } }) => {
+const AddContact = ({ isOpen, toggleVisibility, user: { user } }) => {
   const [contactID, setContactID] = useState('');
   const [usersRef] = useState(firebase.database().ref('users'));
 

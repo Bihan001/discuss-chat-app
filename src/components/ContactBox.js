@@ -4,7 +4,13 @@ import doubleCheck from '../assets/done_all.svg';
 import Avatar from './Avatar';
 import { setCurrentChannel, setCurrentChatUser } from '../actions/user';
 
-const ContactBox = ({ contact, setCurrentChannel, setCurrentChatUser, messages, user: { user, currentContact } }) => {
+const ContactBox = ({
+  contact,
+  setCurrentChannel,
+  setCurrentChatUser,
+  getNotificationCount,
+  user: { user, currentContact },
+}) => {
   //const maxTs = Math.max(...messages.map((m) => m.date.getTime()));
   //const lastMsg = messages.find((m) => m.date.getTime() === maxTs);
 
@@ -20,7 +26,7 @@ const ContactBox = ({ contact, setCurrentChannel, setCurrentChatUser, messages, 
       <div className='right-section'>
         <div className='contact-box-header'>
           <h3 className='avatar-title'>{contact.name}</h3>
-          <span className='time-mark'>29/10/2020</span>
+          <span className='time-mark'>{getNotificationCount(contact.id)}</span>
         </div>
         <div className='last-msg'>
           <img src={doubleCheck} alt='' className='icon-small' />
@@ -38,7 +44,7 @@ const ContactBox = ({ contact, setCurrentChannel, setCurrentChatUser, messages, 
       <div className='right-section'>
         <div className='contact-box-header'>
           <h3 className='avatar-title'>{contact.name}</h3>
-          <span className='time-mark'>29/10/2020</span>
+          <span className='time-mark'>{getNotificationCount(contact.id)}</span>
         </div>
         <div className='last-msg'>
           <img src={doubleCheck} alt='' className='icon-small' />

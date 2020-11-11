@@ -3,7 +3,7 @@ import { MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter, MDBInpu
 import { connect } from 'react-redux';
 import firebase from '../firebase';
 
-const JoinChannel = ({ isOpen, toggleVisibility, updateChannels, user: { user } }) => {
+const JoinChannel = ({ isOpen, toggleVisibility, user: { user } }) => {
   const [channelID, setChannelID] = useState('');
   const [usersRef] = useState(firebase.database().ref('users'));
   const [channelsRef] = useState(firebase.database().ref('channels'));

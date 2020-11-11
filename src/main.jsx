@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { setCurrentChatUser } from './actions/user';
 import Avatar from './components/Avatar';
@@ -25,23 +25,37 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
   //const [message, setMessage] = useState('');
   //const [search, setSearch] = useState('');
   const [filteredContacts, setFilterContacts] = useState([]);
+  const [notifications, _setNotifications] = useState([]);
+  const [demo, _setDemo] = useState(null);
   const [channelsRef] = useState(firebase.database().ref('channels'));
   const [usersRef] = useState(firebase.database().ref('users'));
+  const [connectedRef] = useState(firebase.database().ref('.info/connected'));
+  const [messagesRef] = useState(firebase.database().ref('messages'));
+  const [pvtMessagesRef] = useState(firebase.database().ref('private_messages'));
   const [isCreateChannelModalOpen, setCreateChannelModalVisibility] = useState(false);
   const [isJoinChannelModalOpen, setJoinChannelModalVisibility] = useState(false);
   const [isAddContactModalOpen, setAddContactModalVisibility] = useState(false);
-  const [connectedRef] = useState(firebase.database().ref('.info/connected'));
+
+  const notificationsRef = useRef(notifications);
+  const currentContactRef = useRef(currentContact);
+
+  const setNotifications = (x) => {
+    notificationsRef.current = x;
+    _setNotifications(x);
+  };
 
   useEffect(() => {
-    //firebase.database().ref('users').child(user.uid).child('channels').child('-MLOZ3P2dQe8NEVv9-kS').remove();
     addListeners();
   }, []);
 
+  // For contact status (online or offline)
   useEffect(() => {
     if (listener) {
       listener.off();
       console.log('turned off status listener');
     }
+    clearNotifications();
+    currentContactRef.current = currentContact;
     if (currentContact && currentContact.isPrivate) {
       let ids = currentContact.id.split('/');
       let otherID = '';
@@ -58,24 +72,6 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
   }, [currentContact]);
 
   const addListeners = () => {
-    // channelsRef.on('child_added', (snap) => {
-    //   let channel = snap.val();
-    //   if (channel.users.includes(user.uid)) {
-    //     channel['isPrivate'] = false;
-    //     setFilterContacts((items) => [channel, ...items]);
-    //   }
-    // });
-    // usersRef.on('child_added', (snap) => {
-    //   if (snap.key !== user.uid) {
-    //     let otherUser = snap.val();
-    //     if (otherUser.contacted && otherUser.contacted.includes(user.uid)) {
-    //       otherUser['isPrivate'] = true;
-    //       otherUser['id'] = snap.key < user.uid ? `${user.uid}/${snap.key}` : `${snap.key}/${user.uid}`;
-    //       setFilterContacts((items) => [otherUser, ...items]);
-    //     }
-    //   }
-    // });
-
     usersRef
       .child(user.uid)
       .child('channels')
@@ -85,6 +81,9 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
           let channel = snap.val();
           channel['isPrivate'] = false;
           setFilterContacts((items) => [channel, ...items]);
+          messagesRef.child(snap.key).on('value', (s) => {
+            handleNotifications(snap.key, s);
+          });
         });
       });
 
@@ -99,6 +98,9 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
             otherUser['isPrivate'] = true;
             otherUser['id'] = snap.key < user.uid ? `${user.uid}/${snap.key}` : `${snap.key}/${user.uid}`;
             setFilterContacts((items) => [otherUser, ...items]);
+            pvtMessagesRef.child(otherUser['id']).on('value', (s) => {
+              handleNotifications(otherUser['id'], s);
+            });
           });
         }
       });
@@ -113,48 +115,48 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
     usersRef.child(user.uid).onDisconnect().update({ status: 'offline' });
   };
 
-  const updateChannels = async (snapChannel) => {
-    try {
-      snapChannel['isPrivate'] = false;
-      setFilterContacts((items) => [snapChannel, ...items]);
-      // let snap = await channelsRef.once('value');
-      // let loadedChannels = [];
-      // for (let [key, value] of Object.entries(snap.val())) {
-      //   loadedChannels.push(value);
-      // }
-      // let hash = {};
-      // let currentContacts = [...filteredContacts];
-      // for (let i = 0; i < filteredContacts.length; i++) {
-      //   hash[currentContacts[i].id] = true;
-      // }
-      // for (let i = 0; i < loadedChannels.length; i++) {
-      //   if (hash[loadedChannels[i].id]) continue;
-      //   else if (loadedChannels[i].users.includes(user.uid)) {
-      //     currentContacts.unshift(loadedChannels[i]);
-      //     hash[loadedChannels[i].id] = true;
-      //   }
-      // }
-      // setFilterContacts(currentContacts);
-    } catch (err) {
-      console.log(err);
+  const handleNotifications = (contactID, snap) => {
+    let lastTotal = 0;
+    let notifications = notificationsRef.current;
+    let currentContact = currentContactRef.current;
+    let index = notifications.findIndex((n) => n.id === contactID);
+    if (index !== -1) {
+      let tmpNotifications = [...notifications];
+      if (contactID !== currentContact.id) {
+        lastTotal = notifications[index].total;
+        if (snap.numChildren() - lastTotal > 0) {
+          tmpNotifications[index].count = snap.numChildren() - lastTotal;
+        }
+      } else tmpNotifications[index].total = snap.numChildren();
+      tmpNotifications[index].lastKnownTotal = snap.numChildren();
+      setNotifications(tmpNotifications);
+    } else {
+      const n = {
+        id: contactID,
+        total: snap.numChildren(),
+        lastKnownTotal: snap.numChildren(),
+        count: 0,
+      };
+      setNotifications([...notifications, n]);
     }
   };
 
-  const updateContacts = async (snapUser, contactID) => {
-    try {
-      // const snap = await usersRef.once('value');
-      // let loadedContacts = [];
-      // for (let [key, value] of Object.entries(snap.val())) {
-      //   loadedContacts.push(value);
-      // }
-      // let currentContacts = [...filteredContacts];
-      // currentContacts = currentContacts.filter((c) => c.indexOf('/') !== -1);
-      snapUser['isPrivate'] = true;
-      snapUser['id'] = contactID < user.uid ? `${user.uid}/${contactID}` : `${contactID}/${user.uid}`;
-      setFilterContacts((items) => [snapUser, ...items]);
-    } catch (err) {
-      console.log(err);
+  const clearNotifications = () => {
+    const index = notifications.findIndex((n) => n.id === currentContact.id);
+    if (index !== -1) {
+      let updatedNotifications = [...notifications];
+      updatedNotifications[index].total = notifications[index].lastKnownTotal;
+      updatedNotifications[index].count = 0;
+      setNotifications(updatedNotifications);
     }
+  };
+
+  const getNotificationCount = (contactID) => {
+    let cnt = 0;
+    notifications.forEach((n) => {
+      if (n.id === contactID) cnt = n.count;
+    });
+    return cnt;
   };
 
   const toggleCreateChannelModalVisibility = () => setCreateChannelModalVisibility((v) => !v);
@@ -169,16 +171,8 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
           isOpen={isCreateChannelModalOpen}
           toggleVisibility={toggleCreateChannelModalVisibility}
         />
-        <JoinChannel
-          isOpen={isJoinChannelModalOpen}
-          toggleVisibility={toggleJoinChannelModalVisibility}
-          updateChannels={updateChannels}
-        />
-        <AddContact
-          isOpen={isAddContactModalOpen}
-          toggleVisibility={setAddContactModalVisibility}
-          updateContacts={updateContacts}
-        />
+        <JoinChannel isOpen={isJoinChannelModalOpen} toggleVisibility={toggleJoinChannelModalVisibility} />
+        <AddContact isOpen={isAddContactModalOpen} toggleVisibility={setAddContactModalVisibility} />
         {/*Modal */}
         <aside>
           <header>
@@ -198,7 +192,9 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
           <Search />
           <div className='contact-boxes'>
             {filteredContacts.length > 0 &&
-              filteredContacts.map((item) => <ContactBox contact={item} key={item.id} messages={[]} />)}
+              filteredContacts.map((item) => (
+                <ContactBox contact={item} key={item.id} getNotificationCount={getNotificationCount} />
+              ))}
           </div>
         </aside>
         {currentContact ? (
