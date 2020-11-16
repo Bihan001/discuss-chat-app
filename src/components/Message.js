@@ -3,7 +3,7 @@ import doubleCheck from '../assets/done_all.svg';
 
 let extensions = ['jpg', 'jpeg', 'png', 'mp4'];
 
-export default function Message({ message, isOwner }) {
+export default function Message({ message, isOwner, isPrivate }) {
   const [extension, setExtension] = useState('');
 
   useEffect(() => {
@@ -19,6 +19,9 @@ export default function Message({ message, isOwner }) {
 
   return (
     <div className={`message ${isOwner ? 'sent' : 'received'}`}>
+      {!isPrivate && !isOwner && message.user_name && (
+        <div className='user_name'>{message.user_name.split(' ')[0]}</div>
+      )}
       {extension === 'jpg' || extension === 'jpeg' || extension === 'png' ? (
         <div>
           <img className='img-fluid' src={message.fileURL} />

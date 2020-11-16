@@ -35,6 +35,7 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
   const [isCreateChannelModalOpen, setCreateChannelModalVisibility] = useState(false);
   const [isJoinChannelModalOpen, setJoinChannelModalVisibility] = useState(false);
   const [isAddContactModalOpen, setAddContactModalVisibility] = useState(false);
+  const [userNames, setUserNames] = useState({});
 
   const notificationsRef = useRef(notifications);
   const currentContactRef = useRef(currentContact);
@@ -72,6 +73,10 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
   }, [currentContact]);
 
   const addListeners = () => {
+    usersRef.on('child_added', (snap) => {
+      setUserNames((names) => ({ ...names, [snap.key]: snap.val().name }));
+    });
+
     usersRef
       .child(user.uid)
       .child('channels')
@@ -200,13 +205,11 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
         {currentContact ? (
           <main>
             <header>
-              <div>
-                <Avatar user={currentContact} showName /> {/* Contact header on selected chat */}
-                <p>{currentContact.isPrivate ? (currentContact.status === 'online' ? 'online' : 'offline') : null}</p>
-              </div>
+              <Avatar user={currentContact} showName /> {/* Contact header on selected chat */}
+              {currentContact.isPrivate ? (currentContact.status === 'online' ? 'online' : 'offline') : null}
             </header>
             {/* Chat box */}
-            <MessagesBox />
+            <MessagesBox userNames={userNames} />
             <ChatInputBox />
           </main>
         ) : (

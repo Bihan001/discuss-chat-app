@@ -5,9 +5,10 @@ import firebase from '../firebase';
 
 let prevContact = null;
 
-const MessagesBox = ({ user: { user, currentContact } }) => {
+const MessagesBox = ({ user: { user, currentContact }, userNames }) => {
   const [messages, setMessages] = useState([]);
   const [messagesRef, setMessagesRef] = useState(null);
+  const [usersRef] = useState(firebase.database().ref('users'));
 
   useEffect(() => {
     if (messagesRef) messagesRef.child(prevContact ? prevContact : currentContact.id).off('child_added');
@@ -26,6 +27,7 @@ const MessagesBox = ({ user: { user, currentContact } }) => {
       messagesRef.child(currentContact.id).on('child_added', (snap) => {
         let msg = snap.val();
         msg['id'] = snap.key;
+        msg['user_name'] = userNames[msg.user];
         setMessages((items) => [...items, msg]);
       });
     }
@@ -40,7 +42,7 @@ const MessagesBox = ({ user: { user, currentContact } }) => {
     messagesRef && (
       <div className='chats'>
         {messages.map((m) => (
-          <Message key={m.id} message={m} isOwner={m.user === user.uid} />
+          <Message key={m.id} message={m} isOwner={m.user === user.uid} isPrivate={currentContact.isPrivate} />
         ))}
         <div style={{ float: 'right', clear: 'both' }} ref={endDiv}></div>
       </div>
