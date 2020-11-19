@@ -11,7 +11,7 @@ import CreateChannel from './components/createChannel';
 import JoinChannel from './components/joinChannel';
 import AddContact from './components/addContact';
 import firebase from './firebase';
-import { MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from 'mdbreact';
+import { MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBIcon } from 'mdbreact';
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap-css-only/css/bootstrap.min.css';
@@ -127,7 +127,7 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
     let index = notifications.findIndex((n) => n.id === contactID);
     if (index !== -1) {
       let tmpNotifications = [...notifications];
-      if (contactID !== currentContact.id) {
+      if (!currentContact || (currentContact && contactID !== currentContact.id)) {
         lastTotal = notifications[index].total;
         if (snap.numChildren() - lastTotal > 0) {
           tmpNotifications[index].count = snap.numChildren() - lastTotal;
@@ -161,7 +161,7 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
     notifications.forEach((n) => {
       if (n.id === contactID) cnt = n.count;
     });
-    return cnt;
+    return cnt > 0 ? cnt : null;
   };
 
   const toggleCreateChannelModalVisibility = () => setCreateChannelModalVisibility((v) => !v);
@@ -181,16 +181,26 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
         {/*Modal */}
         <aside>
           <header>
-            <Avatar user={user} showName isUser />
+            <Avatar user={user} showName isUser isDark />
             <MDBDropdown>
-              <MDBDropdownToggle style={{ padding: '5px 7px', margin: 0 }}>I</MDBDropdownToggle>
+              <MDBDropdownToggle style={{ padding: '5px 7px', margin: 0 }} id='toggle'>
+                <MDBIcon icon='ellipsis-v' />
+              </MDBDropdownToggle>
               <MDBDropdownMenu basic>
                 <MDBDropdownItem>Profile</MDBDropdownItem>
-                <MDBDropdownItem onClick={() => toggleAddContactModalVisibility()}>Add Contact</MDBDropdownItem>
-                <MDBDropdownItem onClick={() => toggleJoinChannelModalVisibility()}>Join Channel</MDBDropdownItem>
-                <MDBDropdownItem onClick={() => toggleCreateChannelModalVisibility()}>Create Channel</MDBDropdownItem>
-                <MDBDropdownItem divider />
-                <MDBDropdownItem onClick={(e) => signout(e)}>Logout</MDBDropdownItem>
+                <MDBDropdownItem className='menu-item' onClick={() => toggleAddContactModalVisibility()}>
+                  Add Contact
+                </MDBDropdownItem>
+                <MDBDropdownItem className='menu-item' onClick={() => toggleJoinChannelModalVisibility()}>
+                  Join Channel
+                </MDBDropdownItem>
+                <MDBDropdownItem className='menu-item' onClick={() => toggleCreateChannelModalVisibility()}>
+                  Create Channel
+                </MDBDropdownItem>
+                <MDBDropdownItem className='menu-item' divider />
+                <MDBDropdownItem className='menu-item' onClick={(e) => signout(e)}>
+                  Logout
+                </MDBDropdownItem>
               </MDBDropdownMenu>
             </MDBDropdown>
           </header>
@@ -206,7 +216,13 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
           <main>
             <header>
               <Avatar user={currentContact} showName /> {/* Contact header on selected chat */}
-              {currentContact.isPrivate ? (currentContact.status === 'online' ? 'online' : 'offline') : null}
+              {currentContact.isPrivate ? (
+                currentContact.status === 'online' ? (
+                  <MDBIcon icon='circle' style={{ color: '#7CFC00', paddingLeft: '5px', fontSize: '0.8rem' }} />
+                ) : (
+                  <MDBIcon icon='circle' style={{ color: '#FF4500', paddingLeft: '5px', fontSize: '0.8rem' }} />
+                )
+              ) : null}
             </header>
             {/* Chat box */}
             <MessagesBox userNames={userNames} />

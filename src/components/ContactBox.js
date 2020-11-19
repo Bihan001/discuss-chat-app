@@ -18,19 +18,26 @@ const ContactBox = ({
   //   return text.length > length ? `${text.substring(0, length)} ...` : text;
   // }
 
+  const getNotifications = (a) => {
+    if (!currentContact || (currentContact && contact.id !== currentContact.id)) return getNotificationCount(a);
+    return null;
+  };
+
   const channelView = (
     <div
       className={`contact-box ${currentContact && currentContact.id === contact.id ? 'active' : ''}`}
       onClick={() => setCurrentChannel(contact)}>
       <Avatar user={contact} />
       <div className='right-section'>
-        <div className='contact-box-header'>
-          <h3 className='avatar-title'>{contact.name}</h3>
-          <span className='time-mark'>{getNotificationCount(contact.id)}</span>
-        </div>
-        <div className='last-msg'>
-          <img src={doubleCheck} alt='' className='icon-small' />
-          {/* <span className='text'>{truncate(lastMsg.msg, 30)}</span> */}
+        <div style={{ width: '100%' }}>
+          <div className='contact-box-header'>
+            <h3 className='contact-title'>{contact.name}</h3>
+            <span className='time-mark'>{getNotifications(contact.id)}</span>
+          </div>
+          <div className='last-msg'>
+            <img src={doubleCheck} alt='' className='icon-small' />
+            {/* <span className='text'>{truncate(lastMsg.msg, 30)}</span> */}
+          </div>
         </div>
       </div>
     </div>
@@ -39,16 +46,18 @@ const ContactBox = ({
   const userView = (
     <div
       className={`contact-box ${currentContact && currentContact.id === contact.id ? 'active' : ''}`}
-      onClick={() => setCurrentChatUser(contact, user.uid)}>
+      onClick={() => setCurrentChannel(contact, user.uid)}>
       <Avatar user={contact} />
       <div className='right-section'>
-        <div className='contact-box-header'>
-          <h3 className='avatar-title'>{contact.name}</h3>
-          <span className='time-mark'>{getNotificationCount(contact.id)}</span>
-        </div>
-        <div className='last-msg'>
-          <img src={doubleCheck} alt='' className='icon-small' />
-          {/* <span className='text'>{truncate(lastMsg.msg, 30)}</span> */}
+        <div style={{ width: '100%' }}>
+          <div className='contact-box-header'>
+            <h3 className='contact-title'>{contact.name}</h3>
+            <span className='time-mark'>{getNotifications(contact.id)}</span>
+          </div>
+          <div className='last-msg'>
+            <img src={doubleCheck} alt='' className='icon-small' />
+            {/* <span className='text'>{truncate(lastMsg.msg, 30)}</span> */}
+          </div>
         </div>
       </div>
     </div>

@@ -35,7 +35,9 @@ export default function Message({ message, isOwner, isPrivate }) {
       ) : null}
       {message.message}
       <div className='metadata'>
-        <span className='date'>{new Date(message.timestamp).toLocaleTimeString('en-US')}</span>
+        <span className={`date${isOwner ? '-dark' : ''}`}>
+          {new Date(message.timestamp).toLocaleTimeString('en-US')}
+        </span>
         {isOwner && <img src={doubleCheck} alt='' className='icon-small' />}
       </div>
     </div>
