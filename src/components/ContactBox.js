@@ -10,6 +10,7 @@ const ContactBox = ({
   setCurrentChatUser,
   getNotificationCount,
   user: { user, currentContact },
+  toggleMobileMessageModalVisibility,
 }) => {
   //const maxTs = Math.max(...messages.map((m) => m.date.getTime()));
   //const lastMsg = messages.find((m) => m.date.getTime() === maxTs);
@@ -26,7 +27,10 @@ const ContactBox = ({
   const channelView = (
     <div
       className={`contact-box ${currentContact && currentContact.id === contact.id ? 'active' : ''}`}
-      onClick={() => setCurrentChannel(contact)}>
+      onClick={() => {
+        setCurrentChannel(contact);
+        toggleMobileMessageModalVisibility();
+      }}>
       <Avatar user={contact} />
       <div className='right-section'>
         <div style={{ width: '100%' }}>
@@ -46,7 +50,10 @@ const ContactBox = ({
   const userView = (
     <div
       className={`contact-box ${currentContact && currentContact.id === contact.id ? 'active' : ''}`}
-      onClick={() => setCurrentChannel(contact, user.uid)}>
+      onClick={() => {
+        setCurrentChannel(contact, user.uid);
+        toggleMobileMessageModalVisibility();
+      }}>
       <Avatar user={contact} />
       <div className='right-section'>
         <div style={{ width: '100%' }}>

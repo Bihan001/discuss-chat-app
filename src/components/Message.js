@@ -1,3 +1,4 @@
+import { MDBIcon } from 'mdbreact';
 import React, { useState, useEffect } from 'react';
 import doubleCheck from '../assets/done_all.svg';
 
@@ -9,13 +10,23 @@ export default function Message({ message, isOwner, isPrivate }) {
   useEffect(() => {
     if (message && message.fileURL) {
       let end = message.fileURL.split('.').pop();
+      let chk = false;
       extensions.forEach((e) => {
         if (end.includes(e)) {
+          chk = true;
           setExtension(e);
         }
       });
+      if (!chk) setExtension('other');
     }
   }, []);
+
+  const Metadata = (
+    <div className='metadata'>
+      <span className={`date${isOwner ? '-dark' : ''}`}>{new Date(message.timestamp).toLocaleTimeString('en-US')}</span>
+      {isOwner && <img src={doubleCheck} alt='' className='icon-small' />}
+    </div>
+  );
 
   return (
     <div className={`message ${isOwner ? 'sent' : 'received'}`}>
@@ -23,23 +34,18 @@ export default function Message({ message, isOwner, isPrivate }) {
         <div className='user_name'>{message.user_name.split(' ')[0]}</div>
       )}
       {extension === 'jpg' || extension === 'jpeg' || extension === 'png' ? (
-        <div>
-          <img className='img-fluid' src={message.fileURL} />
-        </div>
+        <img className='img-fluid' src={message.fileURL} />
       ) : extension === 'mp4' || extension === 'mkv' ? (
-        <div>
-          <video width='320' height='240' controls>
-            <source src={message.fileURL} type={`video/${extension}`} />
-          </video>
-        </div>
+        <video className='msg-video' controls>
+          <source src={message.fileURL} type={`video/${extension}`} />
+        </video>
+      ) : extension.trim() !== '' ? (
+        <a href={message.fileURL} download target='_blank'>
+          <i data-test='fa' className='fas fa-long-arrow-alt-down pr-1'></i> Download File
+        </a>
       ) : null}
       {message.message}
-      <div className='metadata'>
-        <span className={`date${isOwner ? '-dark' : ''}`}>
-          {new Date(message.timestamp).toLocaleTimeString('en-US')}
-        </span>
-        {isOwner && <img src={doubleCheck} alt='' className='icon-small' />}
-      </div>
+      {Metadata}
     </div>
   );
 }

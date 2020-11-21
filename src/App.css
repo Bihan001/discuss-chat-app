@@ -45,6 +45,15 @@ main {
   background-size: contain;
 }
 
+@media (max-width: 768px) {
+  aside {
+    width: 100%;
+  }
+  main {
+    width: 100%;
+  }
+}
+
 #toggle {
   background-color: #2c3e50 !important;
   color: #f5f5f5;
@@ -250,6 +259,12 @@ input:focus {
   padding: 0.2rem 0.2rem;
 }
 
+@media (max-width: 768px) {
+  .send {
+    width: 14%;
+  }
+}
+
 .message {
   color: #2c3e50;
   clear: both;
@@ -261,8 +276,15 @@ input:focus {
   position: relative;
   margin: 8px 0;
   min-width: 10%;
-  max-width: 60%;
+  max-width: 45%;
+  width: fit-content;
   word-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+  .message {
+    max-width: 100%;
+  }
 }
 
 /* .message::before {
@@ -279,7 +301,7 @@ input:focus {
 .message.received {
   background: #435f7a;
   color: #f5f5f5;
-  float: left;
+  /* float: left; */
 }
 
 .message.received .user_name {
@@ -298,7 +320,8 @@ input:focus {
 
 .message.sent {
   background: #f5f5f5;
-  float: right;
+  /* float: right; */
+  margin-left: auto;
 }
 
 .welcome {
@@ -319,10 +342,10 @@ input:focus {
 }
 
 .metadata {
-  float: right;
-  padding: 0 0 0 7px;
-  position: relative;
-  bottom: -4px;
+  /* float: right; */
+  display: flex;
+  justify-content: flex-end;
+  padding-left: 1.5rem;
 }
 
 .metadata .date {
@@ -335,4 +358,16 @@ input:focus {
   color: #2c3e50;
   font-size: 11px;
   display: inline-block;
+}
+
+.message-modal {
+  transition: all 0.3s linear;
+}
+
+.msg-video {
+  max-width: 100%;
+  width: 100%;
+  max-height: 100%;
+  outline: none;
+  border: none;
 }

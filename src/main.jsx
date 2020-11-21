@@ -18,6 +18,7 @@ import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 
 import './App.css';
+import MobileMessageModal from './components/mobileMessageModal';
 
 let listener = null;
 
@@ -36,6 +37,7 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
   const [isJoinChannelModalOpen, setJoinChannelModalVisibility] = useState(false);
   const [isAddContactModalOpen, setAddContactModalVisibility] = useState(false);
   const [userNames, setUserNames] = useState({});
+  const [isMobileMessageModalOpen, setMobileMessageModalVisibility] = useState(false);
 
   const notificationsRef = useRef(notifications);
   const currentContactRef = useRef(currentContact);
@@ -167,6 +169,7 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
   const toggleCreateChannelModalVisibility = () => setCreateChannelModalVisibility((v) => !v);
   const toggleJoinChannelModalVisibility = () => setJoinChannelModalVisibility((v) => !v);
   const toggleAddContactModalVisibility = () => setAddContactModalVisibility((v) => !v);
+  const toggleMobileMessageModalVisibility = () => setMobileMessageModalVisibility((v) => !v);
 
   return (
     user && (
@@ -177,42 +180,57 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) =
           toggleVisibility={toggleCreateChannelModalVisibility}
         />
         <JoinChannel isOpen={isJoinChannelModalOpen} toggleVisibility={toggleJoinChannelModalVisibility} />
-        <AddContact isOpen={isAddContactModalOpen} toggleVisibility={setAddContactModalVisibility} />
+        <AddContact isOpen={isAddContactModalOpen} toggleVisibility={toggleAddContactModalVisibility} />
         {/*Modal */}
-        <aside>
-          <header>
-            <Avatar user={user} showName isUser isDark />
-            <MDBDropdown>
-              <MDBDropdownToggle style={{ padding: '5px 7px', margin: 0 }} id='toggle'>
-                <MDBIcon icon='ellipsis-v' />
-              </MDBDropdownToggle>
-              <MDBDropdownMenu basic>
-                <MDBDropdownItem>Profile</MDBDropdownItem>
-                <MDBDropdownItem className='menu-item' onClick={() => toggleAddContactModalVisibility()}>
-                  Add Contact
-                </MDBDropdownItem>
-                <MDBDropdownItem className='menu-item' onClick={() => toggleJoinChannelModalVisibility()}>
-                  Join Channel
-                </MDBDropdownItem>
-                <MDBDropdownItem className='menu-item' onClick={() => toggleCreateChannelModalVisibility()}>
-                  Create Channel
-                </MDBDropdownItem>
-                <MDBDropdownItem className='menu-item' divider />
-                <MDBDropdownItem className='menu-item' onClick={(e) => signout(e)}>
-                  Logout
-                </MDBDropdownItem>
-              </MDBDropdownMenu>
-            </MDBDropdown>
-          </header>
-          <Search />
-          <div className='contact-boxes'>
-            {filteredContacts.length > 0 &&
-              filteredContacts.map((item) => (
-                <ContactBox contact={item} key={item.id} getNotificationCount={getNotificationCount} />
-              ))}
-          </div>
-        </aside>
-        {currentContact ? (
+        {window.innerWidth <= 768 && (
+          <MobileMessageModal
+            isVisible={isMobileMessageModalOpen}
+            userNames={userNames}
+            toggleVisibility={toggleMobileMessageModalVisibility}
+          />
+        )}
+        {window.innerWidth > 768 || !isMobileMessageModalOpen ? (
+          <aside>
+            <header>
+              <Avatar user={user} showName isUser isDark />
+              <MDBDropdown dropleft>
+                <MDBDropdownToggle style={{ padding: '5px 7px', margin: 0 }} id='toggle'>
+                  <MDBIcon icon='ellipsis-v' />
+                </MDBDropdownToggle>
+                <MDBDropdownMenu basic>
+                  <MDBDropdownItem>Profile</MDBDropdownItem>
+                  <MDBDropdownItem className='menu-item' onClick={() => toggleAddContactModalVisibility()}>
+                    Add Contact
+                  </MDBDropdownItem>
+                  <MDBDropdownItem className='menu-item' onClick={() => toggleJoinChannelModalVisibility()}>
+                    Join Channel
+                  </MDBDropdownItem>
+                  <MDBDropdownItem className='menu-item' onClick={() => toggleCreateChannelModalVisibility()}>
+                    Create Channel
+                  </MDBDropdownItem>
+                  <MDBDropdownItem className='menu-item' divider />
+                  <MDBDropdownItem className='menu-item' onClick={(e) => signout(e)}>
+                    Logout
+                  </MDBDropdownItem>
+                </MDBDropdownMenu>
+              </MDBDropdown>
+            </header>
+            <Search />
+            <div className='contact-boxes'>
+              {filteredContacts.length > 0 &&
+                filteredContacts.map((item) => (
+                  <ContactBox
+                    contact={item}
+                    key={item.id}
+                    getNotificationCount={getNotificationCount}
+                    isMobileMessageModalOpen={isMobileMessageModalOpen}
+                    toggleMobileMessageModalVisibility={toggleMobileMessageModalVisibility}
+                  />
+                ))}
+            </div>
+          </aside>
+        ) : null}
+        {window.innerWidth <= 768 ? null : currentContact ? (
           <main>
             <header>
               <Avatar user={currentContact} showName /> {/* Contact header on selected chat */}

@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import Message from './Message';
 import firebase from '../firebase';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 let prevContact = null;
 
@@ -9,6 +10,13 @@ const MessagesBox = ({ user: { user, currentContact }, userNames }) => {
   const [messages, setMessages] = useState([]);
   const [messagesRef, setMessagesRef] = useState(null);
   const [usersRef] = useState(firebase.database().ref('users'));
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  };
+
+  useEffect(scrollToBottom, [messages]);
 
   useEffect(() => {
     if (messagesRef) messagesRef.child(prevContact ? prevContact : currentContact.id).off('child_added');
@@ -33,18 +41,13 @@ const MessagesBox = ({ user: { user, currentContact }, userNames }) => {
     }
   }, [messagesRef]);
 
-  const endDiv = useRef(null);
-  // useEffect(() => {
-  //   endDiv.current.scrollIntoView();
-  // }, [messages]);
-
   return (
     messagesRef && (
       <div className='chats'>
         {messages.map((m) => (
           <Message key={m.id} message={m} isOwner={m.user === user.uid} isPrivate={currentContact.isPrivate} />
         ))}
-        <div style={{ float: 'right', clear: 'both' }} ref={endDiv}></div>
+        <div ref={messagesEndRef}></div>
       </div>
     )
   );
