@@ -1,17 +1,19 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { Route, Switch } from 'react-router-dom';
 import { setUser, clearUser } from './actions/user';
 import firebase from './firebase';
 import Login from './login';
 import Main from './main';
 
-const App = ({ user: { user }, setUser, clearUser }) => {
+const App = ({ user: { user }, setUser, clearUser, history }) => {
   const [usersRef] = useState(firebase.database().ref('users'));
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         console.log(user);
         setUser(user);
+        //history.push('/dashboard');
       } else {
         clearUser();
         console.log('not logged in');
@@ -71,7 +73,15 @@ const App = ({ user: { user }, setUser, clearUser }) => {
     }
   };
 
-  return <Fragment>{!user ? <Login signin={signin} /> : <Main signout={signout} />}</Fragment>;
+  return <Fragment>{!user ? <Login signin={signin} /> : <Main signout={signout} history={history} />}</Fragment>;
+  // return (
+  //   <Fragment>
+  //     <Switch>
+  //       <Route exact path='/' component={() => <Login signin={signin} />} />
+  //       <Route exact path='/dashboard' component={() => <Main signout={signout} history={history} />} />
+  //     </Switch>
+  //   </Fragment>
+  // );
 };
 
 const mapDispatchToProps = (state) => ({

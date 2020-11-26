@@ -39,7 +39,7 @@ aside {
 main {
   width: 70%;
   background: #e6eaea;
-  /* background-image: url(./assets/chatbg.png); */
+  background-image: url(./assets/chatbg.png);
   display: flex;
   flex-direction: column;
   background-size: contain;
@@ -361,7 +361,7 @@ input:focus {
 }
 
 .message-modal {
-  transition: all 0.3s linear;
+  height: calc(var(--vh, 1vh) * 100);
 }
 
 .msg-video {
@@ -370,4 +370,28 @@ input:focus {
   max-height: 100%;
   outline: none;
   border: none;
+}
+
+#profile-modal .modal-content {
+  min-height: 100%;
+}
+
+#profile-modal .modal-full-height {
+  min-height: 100%;
+  height: 100%;
+  margin: 0 !important;
+}
+
+#message-modal .modal-content {
+  min-height: 100%;
+}
+
+#message-modal .modal-full-height {
+  min-height: 100%;
+  height: 100%;
+  margin: 0 !important;
+}
+
+.fade {
+  transition: opacity 0.1s linear !important;
 }

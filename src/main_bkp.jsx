@@ -11,7 +11,6 @@ import CreateChannel from './components/createChannel';
 import JoinChannel from './components/joinChannel';
 import AddContact from './components/addContact';
 import ProfileModal from './components/profileModal';
-import MobileMessageModal from './components/mobileMessageModal';
 import firebase from './firebase';
 import { MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBIcon } from 'mdbreact';
 
@@ -20,12 +19,11 @@ import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 
 import './App.css';
+import MobileMessageModal from './components/mobileMessageModal';
 
 let listener = null;
 
-let myHistory = [];
-
-const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser, history, router, route }) => {
+const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser }) => {
   //const [message, setMessage] = useState('');
   //const [search, setSearch] = useState('');
   const [filteredContacts, setFilterContacts] = useState([]);
@@ -51,46 +49,8 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser, his
     _setNotifications(x);
   };
 
-  const resizeHeightOnMobile = () => {
-    let vh = window.innerHeight * 0.01;
-    // Then we set the value in the --vh custom property to the root of the document
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
-    window.addEventListener('resize', () => {
-      // We execute the same script as before
-      let vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    });
-  };
-
   useEffect(() => {
     addListeners();
-    resizeHeightOnMobile();
-    history.listen((location) => {
-      if (history.action === 'POP') {
-        console.log(myHistory);
-        //history.go(1);
-        if (myHistory[myHistory.length - 1] === '/cm') {
-          setCreateChannelModalVisibility(false);
-          myHistory.pop();
-        }
-        if (myHistory[myHistory.length - 1] === '/jm') {
-          setJoinChannelModalVisibility(false);
-          myHistory.pop();
-        }
-        if (myHistory[myHistory.length - 1] === '/am') {
-          setAddContactModalVisibility(false);
-          myHistory.pop();
-        }
-        if (myHistory[myHistory.length - 1] === '/mm') {
-          setMobileMessageModalVisibility(false);
-          myHistory.pop();
-        }
-        if (myHistory[myHistory.length - 1] === '/pm') {
-          setProfileModalVisibility(false);
-          myHistory.pop();
-        }
-      }
-    });
   }, []);
 
   // For contact status (online or offline)
@@ -208,46 +168,11 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser, his
     return cnt > 0 ? cnt : null;
   };
 
-  const toggleCreateChannelModalVisibility = () =>
-    setCreateChannelModalVisibility((v) => {
-      if (!v) {
-        myHistory.push('/cm');
-        history.push('/cm');
-      } else myHistory.pop();
-      return !v;
-    });
-  const toggleJoinChannelModalVisibility = () =>
-    setJoinChannelModalVisibility((v) => {
-      if (!v) {
-        myHistory.push('/jm');
-        history.push('/jm');
-      } else myHistory.pop();
-      return !v;
-    });
-  const toggleAddContactModalVisibility = () =>
-    setAddContactModalVisibility((v) => {
-      if (!v) {
-        myHistory.push('/am');
-        history.push('/am');
-      } else myHistory.pop();
-      return !v;
-    });
-  const toggleMobileMessageModalVisibility = () =>
-    setMobileMessageModalVisibility((v) => {
-      if (!v) {
-        myHistory.push('/mm');
-        history.push('/mm');
-      } else myHistory.pop();
-      return !v;
-    });
-  const toggleProfileModalVisibility = () =>
-    setProfileModalVisibility((v) => {
-      if (!v) {
-        myHistory.push('/pm');
-        history.push('/pm');
-      } else myHistory.pop();
-      return !v;
-    });
+  const toggleCreateChannelModalVisibility = () => setCreateChannelModalVisibility((v) => !v);
+  const toggleJoinChannelModalVisibility = () => setJoinChannelModalVisibility((v) => !v);
+  const toggleAddContactModalVisibility = () => setAddContactModalVisibility((v) => !v);
+  const toggleMobileMessageModalVisibility = () => setMobileMessageModalVisibility((v) => !v);
+  const toggleProfileModalVisibility = () => setProfileModalVisibility((v) => !v);
 
   return (
     user && (
@@ -267,47 +192,49 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser, his
             toggleVisibility={toggleMobileMessageModalVisibility}
           />
         )}
-        <aside>
-          <header>
-            <Avatar user={user} showName isUser isDark />
-            <MDBDropdown dropleft>
-              <MDBDropdownToggle style={{ padding: '5px 7px', margin: 0 }} id='toggle'>
-                <MDBIcon icon='ellipsis-v' />
-              </MDBDropdownToggle>
-              <MDBDropdownMenu basic>
-                <MDBDropdownItem className='menu-item' onClick={() => toggleProfileModalVisibility()}>
-                  Profile
-                </MDBDropdownItem>
-                <MDBDropdownItem className='menu-item' onClick={() => toggleAddContactModalVisibility()}>
-                  Add Contact
-                </MDBDropdownItem>
-                <MDBDropdownItem className='menu-item' onClick={() => toggleJoinChannelModalVisibility()}>
-                  Join Channel
-                </MDBDropdownItem>
-                <MDBDropdownItem className='menu-item' onClick={() => toggleCreateChannelModalVisibility()}>
-                  Create Channel
-                </MDBDropdownItem>
-                <MDBDropdownItem className='menu-item' divider />
-                <MDBDropdownItem className='menu-item' onClick={(e) => signout(e)}>
-                  Logout
-                </MDBDropdownItem>
-              </MDBDropdownMenu>
-            </MDBDropdown>
-          </header>
-          <Search />
-          <div className='contact-boxes'>
-            {filteredContacts.length > 0 &&
-              filteredContacts.map((item) => (
-                <ContactBox
-                  contact={item}
-                  key={item.id}
-                  getNotificationCount={getNotificationCount}
-                  isMobileMessageModalOpen={isMobileMessageModalOpen}
-                  toggleMobileMessageModalVisibility={toggleMobileMessageModalVisibility}
-                />
-              ))}
-          </div>
-        </aside>
+        {window.innerWidth > 768 || !isMobileMessageModalOpen ? (
+          <aside>
+            <header>
+              <Avatar user={user} showName isUser isDark />
+              <MDBDropdown dropleft>
+                <MDBDropdownToggle style={{ padding: '5px 7px', margin: 0 }} id='toggle'>
+                  <MDBIcon icon='ellipsis-v' />
+                </MDBDropdownToggle>
+                <MDBDropdownMenu basic>
+                  <MDBDropdownItem className='menu-item' onClick={() => toggleProfileModalVisibility()}>
+                    Profile
+                  </MDBDropdownItem>
+                  <MDBDropdownItem className='menu-item' onClick={() => toggleAddContactModalVisibility()}>
+                    Add Contact
+                  </MDBDropdownItem>
+                  <MDBDropdownItem className='menu-item' onClick={() => toggleJoinChannelModalVisibility()}>
+                    Join Channel
+                  </MDBDropdownItem>
+                  <MDBDropdownItem className='menu-item' onClick={() => toggleCreateChannelModalVisibility()}>
+                    Create Channel
+                  </MDBDropdownItem>
+                  <MDBDropdownItem className='menu-item' divider />
+                  <MDBDropdownItem className='menu-item' onClick={(e) => signout(e)}>
+                    Logout
+                  </MDBDropdownItem>
+                </MDBDropdownMenu>
+              </MDBDropdown>
+            </header>
+            <Search />
+            <div className='contact-boxes'>
+              {filteredContacts.length > 0 &&
+                filteredContacts.map((item) => (
+                  <ContactBox
+                    contact={item}
+                    key={item.id}
+                    getNotificationCount={getNotificationCount}
+                    isMobileMessageModalOpen={isMobileMessageModalOpen}
+                    toggleMobileMessageModalVisibility={toggleMobileMessageModalVisibility}
+                  />
+                ))}
+            </div>
+          </aside>
+        ) : null}
         {window.innerWidth <= 768 ? null : currentContact ? (
           <main>
             <header>

@@ -3,7 +3,7 @@ import MessagesBox from './MessagesBox';
 import Avatar from './Avatar';
 import ChatInputBox from './ChatInputBox';
 import { connect } from 'react-redux';
-import { MDBIcon } from 'mdbreact';
+import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter, MDBIcon } from 'mdbreact';
 
 const MobileMessageModal = ({ isVisible, toggleVisibility, userNames, user: { currentContact } }) => {
   // useEffect(() => {
@@ -17,23 +17,24 @@ const MobileMessageModal = ({ isVisible, toggleVisibility, userNames, user: { cu
   //   }
   // }, [isVisible]);
   return (
-    currentContact &&
-    isVisible && (
-      <main className='message-modal'>
-        <button onClick={() => toggleVisibility()}>close</button>
-        <header>
-          <Avatar user={currentContact} showName /> {/* Contact header on selected chat */}
-          {currentContact.isPrivate ? (
-            currentContact.status === 'online' ? (
-              <MDBIcon icon='circle' style={{ color: '#7CFC00', paddingLeft: '5px', fontSize: '0.8rem' }} />
-            ) : (
-              <MDBIcon icon='circle' style={{ color: '#FF4500', paddingLeft: '5px', fontSize: '0.8rem' }} />
-            )
-          ) : null}
-        </header>
-        <MessagesBox userNames={userNames} />
-        <ChatInputBox />
-      </main>
+    currentContact && (
+      <MDBModal isOpen={isVisible} toggle={() => toggleVisibility()} fullHeight position='right' id='message-modal'>
+        <main className='message-modal'>
+          <button onClick={() => toggleVisibility()}>close</button>
+          <header>
+            <Avatar user={currentContact} showName /> {/* Contact header on selected chat */}
+            {currentContact.isPrivate ? (
+              currentContact.status === 'online' ? (
+                <MDBIcon icon='circle' style={{ color: '#7CFC00', paddingLeft: '5px', fontSize: '0.8rem' }} />
+              ) : (
+                <MDBIcon icon='circle' style={{ color: '#FF4500', paddingLeft: '5px', fontSize: '0.8rem' }} />
+              )
+            ) : null}
+          </header>
+          <MessagesBox userNames={userNames} />
+          <ChatInputBox />
+        </main>
+      </MDBModal>
     )
   );
 };
