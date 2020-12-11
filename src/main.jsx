@@ -5,13 +5,13 @@ import Avatar from './components/Avatar';
 import ContactBox from './components/ContactBox';
 import MessagesBox from './components/MessagesBox';
 import ChatInputBox from './components/ChatInputBox';
-import Search from './components/Search';
 import Welcome from './components/Welcome';
 import CreateChannel from './components/createChannel';
 import JoinChannel from './components/joinChannel';
 import AddContact from './components/addContact';
 import ProfileModal from './components/profileModal';
 import MobileMessageModal from './components/mobileMessageModal';
+import ContactProfileModal from './components/contactProfileModal';
 import firebase from './firebase';
 import { MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBIcon } from 'mdbreact';
 
@@ -42,7 +42,7 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser, his
   const [userNames, setUserNames] = useState({});
   const [isMobileMessageModalOpen, setMobileMessageModalVisibility] = useState(false);
   const [isProfileModalVisible, setProfileModalVisibility] = useState(false);
-
+  const [isContactProfileModalVisible, setContactProfileModalVisibility] = useState(false);
   const notificationsRef = useRef(notifications);
   const currentContactRef = useRef(currentContact);
 
@@ -89,6 +89,10 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser, his
           setProfileModalVisibility(false);
           myHistory.pop();
         }
+        if (myHistory[myHistory.length - 1] === '/ccm') {
+          setContactProfileModalVisibility(false);
+          myHistory.pop();
+        }
       }
     });
   }, []);
@@ -129,6 +133,7 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser, his
         channelsRef.child(channelKey).once('value', (snap) => {
           let channel = snap.val();
           channel['isPrivate'] = false;
+          channel['display'] = true;
           setFilterContacts((items) => [channel, ...items]);
           messagesRef.child(snap.key).on('value', (s) => {
             handleNotifications(snap.key, s);
@@ -146,6 +151,7 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser, his
             let otherUser = snap.val();
             otherUser['isPrivate'] = true;
             otherUser['id'] = snap.key < user.uid ? `${user.uid}/${snap.key}` : `${snap.key}/${user.uid}`;
+            otherUser['display'] = true;
             setFilterContacts((items) => [otherUser, ...items]);
             pvtMessagesRef.child(otherUser['id']).on('value', (s) => {
               handleNotifications(otherUser['id'], s);
@@ -162,6 +168,19 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser, his
     });
 
     usersRef.child(user.uid).onDisconnect().update({ status: 'offline' });
+  };
+
+  const filterContacts = (e) => {
+    let val = e.target.value.toUpperCase();
+    let tmpContacts = [...filteredContacts];
+    for (let i = 0; i < tmpContacts.length; i++) {
+      if (tmpContacts[i].name.toUpperCase().indexOf(val) > -1) {
+        tmpContacts[i].display = true;
+      } else {
+        tmpContacts[i].display = false;
+      }
+    }
+    setFilterContacts(tmpContacts);
   };
 
   const handleNotifications = (contactID, snap) => {
@@ -249,84 +268,107 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser, his
       return !v;
     });
 
+  const toggleContactProfileModalVisibility = () =>
+    setContactProfileModalVisibility((v) => {
+      if (!v) {
+        myHistory.push('/ccm');
+        history.push('/ccm');
+      } else myHistory.pop();
+      return !v;
+    });
+
   return (
     user && (
-      <div className='app'>
-        <CreateChannel
-          user={user}
-          isOpen={isCreateChannelModalOpen}
-          toggleVisibility={toggleCreateChannelModalVisibility}
-        />
-        <JoinChannel isOpen={isJoinChannelModalOpen} toggleVisibility={toggleJoinChannelModalVisibility} />
-        <AddContact isOpen={isAddContactModalOpen} toggleVisibility={toggleAddContactModalVisibility} />
-        <ProfileModal isOpen={isProfileModalVisible} toggleVisibility={toggleProfileModalVisibility} />
-        {window.innerWidth <= 768 && (
-          <MobileMessageModal
-            isVisible={isMobileMessageModalOpen}
-            userNames={userNames}
-            toggleVisibility={toggleMobileMessageModalVisibility}
+      <div className='fullScreen'>
+        <div className='app'>
+          <CreateChannel
+            user={user}
+            isOpen={isCreateChannelModalOpen}
+            toggleVisibility={toggleCreateChannelModalVisibility}
           />
-        )}
-        <aside>
-          <header>
-            <Avatar user={user} showName isUser isDark />
-            <MDBDropdown dropleft>
-              <MDBDropdownToggle style={{ padding: '5px 7px', margin: 0 }} id='toggle'>
-                <MDBIcon icon='ellipsis-v' />
-              </MDBDropdownToggle>
-              <MDBDropdownMenu basic>
-                <MDBDropdownItem className='menu-item' onClick={() => toggleProfileModalVisibility()}>
-                  Profile
-                </MDBDropdownItem>
-                <MDBDropdownItem className='menu-item' onClick={() => toggleAddContactModalVisibility()}>
-                  Add Contact
-                </MDBDropdownItem>
-                <MDBDropdownItem className='menu-item' onClick={() => toggleJoinChannelModalVisibility()}>
-                  Join Channel
-                </MDBDropdownItem>
-                <MDBDropdownItem className='menu-item' onClick={() => toggleCreateChannelModalVisibility()}>
-                  Create Channel
-                </MDBDropdownItem>
-                <MDBDropdownItem className='menu-item' divider />
-                <MDBDropdownItem className='menu-item' onClick={(e) => signout(e)}>
-                  Logout
-                </MDBDropdownItem>
-              </MDBDropdownMenu>
-            </MDBDropdown>
-          </header>
-          <Search />
-          <div className='contact-boxes'>
-            {filteredContacts.length > 0 &&
-              filteredContacts.map((item) => (
-                <ContactBox
-                  contact={item}
-                  key={item.id}
-                  getNotificationCount={getNotificationCount}
-                  isMobileMessageModalOpen={isMobileMessageModalOpen}
-                  toggleMobileMessageModalVisibility={toggleMobileMessageModalVisibility}
-                />
-              ))}
-          </div>
-        </aside>
-        {window.innerWidth <= 768 ? null : currentContact ? (
-          <main>
+          <JoinChannel isOpen={isJoinChannelModalOpen} toggleVisibility={toggleJoinChannelModalVisibility} />
+          <AddContact isOpen={isAddContactModalOpen} toggleVisibility={toggleAddContactModalVisibility} />
+          <ProfileModal isOpen={isProfileModalVisible} toggleVisibility={toggleProfileModalVisibility} />
+          {window.innerWidth > 768 && (
+            <ContactProfileModal
+              isOpen={isContactProfileModalVisible}
+              toggleVisibility={toggleContactProfileModalVisibility}
+            />
+          )}
+          {window.innerWidth <= 768 && (
+            <MobileMessageModal
+              isVisible={isMobileMessageModalOpen}
+              userNames={userNames}
+              toggleVisibility={toggleMobileMessageModalVisibility}
+              toggleContactProfileModalVisibility={toggleContactProfileModalVisibility}
+              isContactProfileModalVisible={isContactProfileModalVisible}
+            />
+          )}
+          <aside>
             <header>
-              <Avatar user={currentContact} showName /> {/* Contact header on selected chat */}
-              {currentContact.isPrivate ? (
-                currentContact.status === 'online' ? (
-                  <MDBIcon icon='circle' style={{ color: '#7CFC00', paddingLeft: '5px', fontSize: '0.8rem' }} />
-                ) : (
-                  <MDBIcon icon='circle' style={{ color: '#FF4500', paddingLeft: '5px', fontSize: '0.8rem' }} />
-                )
-              ) : null}
+              <Avatar user={user} showName isUser isDark />
+              <MDBDropdown dropleft>
+                <MDBDropdownToggle style={{ padding: '5px 7px', margin: 0 }} id='toggle'>
+                  <MDBIcon icon='ellipsis-v' />
+                </MDBDropdownToggle>
+                <MDBDropdownMenu basic>
+                  <MDBDropdownItem className='menu-item' onClick={() => toggleProfileModalVisibility()}>
+                    Profile
+                  </MDBDropdownItem>
+                  <MDBDropdownItem className='menu-item' onClick={() => toggleAddContactModalVisibility()}>
+                    Add Contact
+                  </MDBDropdownItem>
+                  <MDBDropdownItem className='menu-item' onClick={() => toggleJoinChannelModalVisibility()}>
+                    Join Channel
+                  </MDBDropdownItem>
+                  <MDBDropdownItem className='menu-item' onClick={() => toggleCreateChannelModalVisibility()}>
+                    Create Channel
+                  </MDBDropdownItem>
+                  <MDBDropdownItem className='menu-item' divider />
+                  <MDBDropdownItem className='menu-item' onClick={(e) => signout(e)}>
+                    Logout
+                  </MDBDropdownItem>
+                </MDBDropdownMenu>
+              </MDBDropdown>
             </header>
-            {/* Chat box */}
-            <MessagesBox userNames={userNames} />
-            <ChatInputBox />
-          </main>
-        ) : (
-          <Welcome />
-        )}
+            <div className='search'>
+              <input type='text' placeholder='Search Contacts...' onChange={(e) => filterContacts(e)} />
+            </div>
+            <div className='contact-boxes'>
+              {filteredContacts.length > 0 &&
+                filteredContacts.map((item) =>
+                  item.display ? (
+                    <ContactBox
+                      contact={item}
+                      key={item.id}
+                      getNotificationCount={getNotificationCount}
+                      isMobileMessageModalOpen={isMobileMessageModalOpen}
+                      toggleMobileMessageModalVisibility={toggleMobileMessageModalVisibility}
+                    />
+                  ) : null
+                )}
+            </div>
+          </aside>
+          {window.innerWidth <= 768 ? null : currentContact ? (
+            <main>
+              <header id='messageBox-header' onClick={() => toggleContactProfileModalVisibility()}>
+                <Avatar user={currentContact} showName /> {/* Contact header on selected chat */}
+                {currentContact.isPrivate ? (
+                  currentContact.status === 'online' ? (
+                    <MDBIcon icon='circle' style={{ color: '#7CFC00', paddingLeft: '5px', fontSize: '0.8rem' }} />
+                  ) : (
+                    <MDBIcon icon='circle' style={{ color: '#FF4500', paddingLeft: '5px', fontSize: '0.8rem' }} />
+                  )
+                ) : null}
+              </header>
+              {/* Chat box */}
+              <MessagesBox userNames={userNames} />
+              <ChatInputBox />
+            </main>
+          ) : (
+            <Welcome />
+          )}
+        </div>
       </div>
     )
   );

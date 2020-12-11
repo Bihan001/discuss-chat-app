@@ -11,6 +11,7 @@ const AddContact = ({ isOpen, toggleVisibility, user: { user } }) => {
       if (!contactID.trim()) return;
       if (contactID === user.uid) return;
       let snap = await usersRef.child(contactID).once('value');
+      if (!snap) return;
       let snapUser1 = snap.val();
       if (snapUser1.contacted) {
         if (!snapUser1.contacted.includes(user.uid)) {
@@ -35,6 +36,8 @@ const AddContact = ({ isOpen, toggleVisibility, user: { user } }) => {
       toggleVisibility();
     } catch (err) {
       console.log(err);
+      setContactID('');
+      toggleVisibility();
     }
   };
 

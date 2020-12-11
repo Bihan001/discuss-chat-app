@@ -4,8 +4,16 @@ import Avatar from './Avatar';
 import ChatInputBox from './ChatInputBox';
 import { connect } from 'react-redux';
 import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter, MDBIcon } from 'mdbreact';
+import ContactProfileModal from './contactProfileModal';
 
-const MobileMessageModal = ({ isVisible, toggleVisibility, userNames, user: { currentContact } }) => {
+const MobileMessageModal = ({
+  isVisible,
+  toggleVisibility,
+  isContactProfileModalVisible,
+  toggleContactProfileModalVisibility,
+  userNames,
+  user: { currentContact },
+}) => {
   // useEffect(() => {
   //   let modalRef = document.querySelector('.message-modal');
   //   if (modalRef) {
@@ -19,9 +27,13 @@ const MobileMessageModal = ({ isVisible, toggleVisibility, userNames, user: { cu
   return (
     currentContact && (
       <MDBModal isOpen={isVisible} toggle={() => toggleVisibility()} fullHeight position='right' id='message-modal'>
+        <ContactProfileModal
+          isOpen={isContactProfileModalVisible}
+          toggleVisibility={toggleContactProfileModalVisibility}
+        />
         <main className='message-modal'>
-          <button onClick={() => toggleVisibility()}>close</button>
-          <header>
+          {/* <button onClick={() => toggleVisibility()}>close</button> */}
+          <header onClick={() => toggleContactProfileModalVisibility()}>
             <Avatar user={currentContact} showName /> {/* Contact header on selected chat */}
             {currentContact.isPrivate ? (
               currentContact.status === 'online' ? (

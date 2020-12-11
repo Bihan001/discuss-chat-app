@@ -15,10 +15,33 @@
 #435F7A chat other 
 */
 
+.fullScreen {
+  height: 100vh;
+  display: flex;
+  background: url('https://images.unsplash.com/photo-1607543551362-9c1e4f4ac287?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1100&q=80');
+  background-size: cover;
+}
+
 .app {
   display: flex;
-  min-height: 100vh;
-  max-height: 100vh;
+  /* min-height: 100vh; */
+  /* max-height: 100vh; */
+  height: 95.3vh;
+  margin: 1rem 1rem;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(5px);
+}
+
+@media (max-width: 768px) {
+  .app {
+    margin: 0;
+    min-height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
 }
 
 h1,
@@ -31,15 +54,16 @@ h6 {
 }
 
 aside {
-  width: 30%;
+  width: 28%;
   display: flex;
   flex-direction: column;
+  border-right: 0.1px solid #435f7a;
 }
 
 main {
-  width: 70%;
-  background: #e6eaea;
-  background-image: url(./assets/chatbg.png);
+  width: 72%;
+  background: transparent;
+  /* background-image: url(./assets/chatbg.png); */
   display: flex;
   flex-direction: column;
   background-size: contain;
@@ -55,7 +79,7 @@ main {
 }
 
 #toggle {
-  background-color: #2c3e50 !important;
+  background-color: transparent !important;
   color: #f5f5f5;
   box-shadow: none;
   outline: none;
@@ -86,7 +110,7 @@ main {
 }
 
 .search {
-  background: #32465a;
+  /* background: #32465a; */
   padding-right: 0.4rem;
 }
 
@@ -97,7 +121,7 @@ main {
   background-position: 0.64rem 0.78rem;
   padding: 0.6rem 0;
   padding-left: 2rem;
-  background: #32465a;
+  background: transparent;
   color: #f5f5f5;
 }
 
@@ -113,10 +137,10 @@ main {
 .contact-boxes {
   overflow-y: auto;
   flex: 1;
-  background-color: #2c3e50;
+  /* background-color: #2c3e50; */
 }
 .contact-box {
-  background: #2c3e50;
+  /* background: #2c3e50; */
   height: 10%;
 
   padding: 0.75rem 0.75rem;
@@ -141,7 +165,7 @@ main {
 
 main header,
 aside header {
-  background: #f5f5f5;
+  background: transparent;
   height: 3.7rem;
   display: flex;
   justify-content: space-between;
@@ -149,7 +173,7 @@ aside header {
 }
 
 aside header {
-  background: #2c3e50;
+  /* background: #2c3e50; */
 }
 
 main header {
@@ -167,7 +191,7 @@ main header {
 }
 
 .avatar-title {
-  color: #2c3e50;
+  color: #f5f5f5;
   font-size: 18px;
   padding-top: 5px;
   font-weight: 400;
@@ -176,6 +200,7 @@ main header {
   display: flex;
   align-items: center;
   height: 70%;
+  margin: 1rem 0;
 }
 .right-section {
   width: 100%;
@@ -230,9 +255,9 @@ input {
 }
 
 .dark {
-  background-color: #2c3e50 !important;
+  /* background-color: #2c3e50 !important; */
   color: #f5f5f5 !important;
-  font-weight: 300 !important;
+  font-weight: 350 !important;
 }
 
 .chat-input input {
@@ -325,7 +350,7 @@ input:focus {
 }
 
 .welcome {
-  background: #2c3e50;
+  /* background: #2c3e50; */
   flex: 1;
   display: flex;
   justify-content: center;
@@ -336,6 +361,10 @@ input:focus {
   margin-top: 2rem;
   font-weight: normal;
   color: #f5f5f5;
+}
+.welcome h5 {
+  color: #f5f5f5;
+  font-weight: 300;
 }
 .welcome img {
   width: 300px;
@@ -394,4 +423,31 @@ input:focus {
 
 .fade {
   transition: opacity 0.1s linear !important;
+}
+
+#messageBox-header {
+  cursor: pointer;
+}
+
+.profile-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-img {
+  width: 50%;
+  border-radius: 50%;
+  margin-bottom: 2rem;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  width: 90%;
+}
+
+.profile-details p {
+  font-size: 1.1rem;
 }

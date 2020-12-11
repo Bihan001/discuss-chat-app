@@ -13,7 +13,7 @@ const MessagesBox = ({ user: { user, currentContact }, userNames }) => {
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
-    if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
   };
 
   useEffect(scrollToBottom, [messages]);

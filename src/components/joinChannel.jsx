@@ -36,6 +36,8 @@ const JoinChannel = ({ isOpen, toggleVisibility, user: { user } }) => {
       toggleVisibility();
     } catch (err) {
       console.log(err);
+      setChannelID('');
+      toggleVisibility();
     }
   };
   return (
