@@ -46,6 +46,24 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser, his
   const notificationsRef = useRef(notifications);
   const currentContactRef = useRef(currentContact);
 
+  useEffect(() => {
+    let aside = document.querySelector('aside');
+    if (aside && window.innerWidth <= 768) {
+      if (isMobileMessageModalOpen || isContactProfileModalVisible) {
+        aside.style.opacity = 0;
+      } else {
+        aside.style.opacity = 1;
+      }
+    }
+  }, [
+    isCreateChannelModalOpen,
+    isJoinChannelModalOpen,
+    isAddContactModalOpen,
+    isMobileMessageModalOpen,
+    isProfileModalVisible,
+    isContactProfileModalVisible,
+  ]);
+
   const setNotifications = (x) => {
     notificationsRef.current = x;
     _setNotifications(x);
@@ -355,9 +373,9 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser, his
                 <Avatar user={currentContact} showName /> {/* Contact header on selected chat */}
                 {currentContact.isPrivate ? (
                   currentContact.status === 'online' ? (
-                    <MDBIcon icon='circle' style={{ color: '#7CFC00', paddingLeft: '5px', fontSize: '0.8rem' }} />
+                    <MDBIcon icon='circle' className='offline-icon' />
                   ) : (
-                    <MDBIcon icon='circle' style={{ color: '#FF4500', paddingLeft: '5px', fontSize: '0.8rem' }} />
+                    <MDBIcon icon='circle' className='online-icon' />
                   )
                 ) : null}
               </header>

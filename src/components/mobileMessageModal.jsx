@@ -26,7 +26,13 @@ const MobileMessageModal = ({
   // }, [isVisible]);
   return (
     currentContact && (
-      <MDBModal isOpen={isVisible} toggle={() => toggleVisibility()} fullHeight position='right' id='message-modal'>
+      <MDBModal
+        isOpen={isVisible}
+        toggle={() => toggleVisibility()}
+        fullHeight
+        position='right'
+        id='message-modal'
+        backdropClassName='backdrop'>
         <ContactProfileModal
           isOpen={isContactProfileModalVisible}
           toggleVisibility={toggleContactProfileModalVisibility}

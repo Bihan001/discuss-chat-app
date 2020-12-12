@@ -42,8 +42,8 @@ const AddContact = ({ isOpen, toggleVisibility, user: { user } }) => {
   };
 
   return (
-    <MDBModal isOpen={isOpen} toggle={toggleVisibility}>
-      <MDBModalHeader toggle={toggleVisibility}>Add Contact</MDBModalHeader>
+    <MDBModal isOpen={isOpen} toggle={() => toggleVisibility()}>
+      <MDBModalHeader toggle={() => toggleVisibility()}>Add Contact</MDBModalHeader>
       <MDBModalBody>
         <div className='form-group'>
           <label htmlFor='addContactInput'>Contact ID</label>
@@ -57,7 +57,7 @@ const AddContact = ({ isOpen, toggleVisibility, user: { user } }) => {
         </div>
       </MDBModalBody>
       <MDBModalFooter>
-        <MDBBtn color='secondary' onClick={toggleVisibility}>
+        <MDBBtn color='secondary' onClick={() => toggleVisibility()}>
           Close
         </MDBBtn>
         <MDBBtn color='primary' onClick={() => addContact()}>

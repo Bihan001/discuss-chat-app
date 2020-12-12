@@ -9,6 +9,7 @@ import firebase from '../firebase';
 import { connect } from 'react-redux';
 import SendFileModal from './sendFileModal';
 import ProgressBar from './progressBar';
+import Picker from 'emoji-picker-react';
 
 const ChatInputBox = ({ user: { currentContact, user } }) => {
   const [uploadDetails, setUploadDetails] = useState({
@@ -21,6 +22,7 @@ const ChatInputBox = ({ user: { currentContact, user } }) => {
   const [storageRef] = useState(firebase.storage().ref());
   const [msg, setMsg] = useState('');
   const [isUploadModalOpen, setUploadModalVisibility] = useState(false);
+  const [isEmojiBoardVisible, setEmojiBoardVisibility] = useState(false);
 
   useEffect(() => {
     if (currentContact.isPrivate) {
@@ -29,6 +31,8 @@ const ChatInputBox = ({ user: { currentContact, user } }) => {
       setMessagesRef(firebase.database().ref('messages'));
     }
   }, [currentContact]);
+
+  const toggleEmojiBoardVisibility = () => setEmojiBoardVisibility((v) => !v);
 
   const sendMsg = async (fileURL = '') => {
     try {
@@ -111,9 +115,16 @@ const ChatInputBox = ({ user: { currentContact, user } }) => {
             isOpen={isUploadModalOpen}
             toggleModal={toggleUploadModalVisibility}
           />
-          <div className='icon emoji-selector'>
-            <MDBIcon className='input-icons' far icon='grin' style={{ fontSize: '1.3rem' }} />
-          </div>
+          {/* <div className='icon emoji-selector'>
+            <MDBIcon
+              className='input-icons'
+              far
+              icon='grin'
+              style={{ fontSize: '1.3rem' }}
+              onClick={() => toggleEmojiBoardVisibility()}
+            />
+            {isEmojiBoardVisible && <Picker onEmojiClick={(e, emoji) => console.log(emoji)} preload={true} />}
+          </div> */}
           <div className='chat-input'>
             <input
               type='text'
