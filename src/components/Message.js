@@ -2,7 +2,7 @@ import { MDBIcon } from 'mdbreact';
 import React, { useState, useEffect } from 'react';
 import doubleCheck from '../assets/done_all.svg';
 
-let extensions = ['jpg', 'jpeg', 'png', 'mp4'];
+let extensions = ['jpg', 'jpeg', 'png', 'mp4', 'mp3', 'mpeg', 'ogg'];
 
 export default function Message({ message, isOwner, isPrivate }) {
   const [extension, setExtension] = useState('');
@@ -21,10 +21,18 @@ export default function Message({ message, isOwner, isPrivate }) {
     }
   }, []);
 
+  const getTime = (t) => {
+    let a = new Date(t);
+    let str = '';
+    str = str.concat(a.getHours(), ':', a.getMinutes());
+    console.log(str);
+    return str;
+  };
+
   const Metadata = (
     <div className='metadata'>
-      <span className={`date${isOwner ? '-dark' : ''}`}>{new Date(message.timestamp).toLocaleTimeString('en-US')}</span>
-      {isOwner && <img src={doubleCheck} alt='' className='icon-small' />}
+      <span className={`date${isOwner ? '-dark' : ''}`}>{getTime(message.timestamp).toString()}</span>
+      {/* {isOwner && <img src={doubleCheck} alt='' className='icon-small' />} */}
     </div>
   );
 
@@ -39,6 +47,11 @@ export default function Message({ message, isOwner, isPrivate }) {
         <video className='msg-video' controls>
           <source src={message.fileURL} type={`video/${extension}`} />
         </video>
+      ) : extension === 'mp3' || extension === 'mpeg' || extension === 'ogg' ? (
+        <audio controls>
+          <source src={message.fileURL} type={`audio/${extension}`} />
+          Your browser does not support the audio tag.
+        </audio>
       ) : extension.trim() !== '' ? (
         <a href={message.fileURL} download target='_blank'>
           <i data-test='fa' className='fas fa-long-arrow-alt-down pr-1'></i> Download File

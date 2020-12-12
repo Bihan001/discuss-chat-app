@@ -39,7 +39,7 @@ const ContactBox = ({
             <span className='time-mark'>{getNotifications(contact.id)}</span>
           </div>
           <div className='last-msg'>
-            <img src={doubleCheck} alt='' className='icon-small' />
+            {/* <img src={doubleCheck} alt='' className='icon-small' /> */}
             {/* <span className='text'>{truncate(lastMsg.msg, 30)}</span> */}
           </div>
         </div>
@@ -62,7 +62,7 @@ const ContactBox = ({
             <span className='time-mark'>{getNotifications(contact.id)}</span>
           </div>
           <div className='last-msg'>
-            <img src={doubleCheck} alt='' className='icon-small' />
+            {/* <img src={doubleCheck} alt='' className='icon-small' /> */}
             {/* <span className='text'>{truncate(lastMsg.msg, 30)}</span> */}
           </div>
         </div>

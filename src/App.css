@@ -344,7 +344,7 @@ input:focus {
   line-height: 1.1rem;
   font-size: 1rem;
   font-weight: 400;
-  padding: 0.5rem 1.2rem;
+  padding: 0.5rem 1rem;
   border-radius: 18px;
   position: relative;
   margin: 8px 0;
@@ -447,6 +447,19 @@ input:focus {
   max-height: 100%;
   outline: none;
   border: none;
+}
+
+audio {
+  width: 20rem;
+  max-height: 100%;
+  outline: none;
+  border: none;
+}
+
+@media (max-width: 768px) {
+  audio {
+    width: 16rem;
+  }
 }
 
 #profile-modal .modal-content {
