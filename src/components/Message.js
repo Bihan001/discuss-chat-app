@@ -24,9 +24,18 @@ export default function Message({ message, isOwner, isPrivate }) {
   const getTime = (t) => {
     let a = new Date(t);
     let str = '';
-    str = str.concat(a.getHours(), ':', a.getMinutes());
-    console.log(str);
-    return str;
+    let h = a.getHours(),
+      m = a.getMinutes();
+    let s = '';
+    if (h == 12) {
+      s = 'PM';
+    } else if (h < 12) {
+      s = 'AM';
+    } else if (h > 12) {
+      s = 'PM';
+      h -= 12;
+    }
+    return str.concat(h, ':', m, ' ', s);
   };
 
   const Metadata = (
