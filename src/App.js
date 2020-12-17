@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Route, Switch } from 'react-router-dom';
 import { setUser, clearUser } from './actions/user';
+import Loading from './components/loading';
 import firebase from './firebase';
 import Login from './login';
 import Main from './main';
@@ -73,7 +73,17 @@ const App = ({ user: { user }, setUser, clearUser, history }) => {
     }
   };
 
-  return <Fragment>{!user ? <Login signin={signin} /> : <Main signout={signout} history={history} />}</Fragment>;
+  return (
+    <Fragment>
+      {user === 'loading' ? (
+        <Loading />
+      ) : !user ? (
+        <Login signin={signin} />
+      ) : (
+        <Main signout={signout} history={history} />
+      )}
+    </Fragment>
+  );
   // return (
   //   <Fragment>
   //     <Switch>

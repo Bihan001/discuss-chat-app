@@ -1,7 +1,7 @@
 import * as types from '../actions/types';
 
 const initialState = {
-  user: null,
+  user: 'loading',
   loading: true,
   currentContact: null,
 };

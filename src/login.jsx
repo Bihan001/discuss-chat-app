@@ -1,11 +1,16 @@
 import React from 'react';
-import { GoogleLoginButton } from 'react-social-login-buttons';
+import { MDBIcon } from 'mdbreact';
 
 const Login = (props) => {
   return (
-    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-      <h3 className='pb-3'>Welcone to Discuss</h3>
-      <GoogleLoginButton onClick={() => props.signin()} />
+    <div className='login-main'>
+      <div>
+        <h3 className='pb-3'>Welcome to Discuss</h3>
+        <button className='google-signin-btn' onClick={() => props.signin()}>
+          <MDBIcon fab icon='google-plus-g' style={{ fontSize: '1.2rem' }} />
+          Sign In
+        </button>
+      </div>
     </div>
   );
 };
