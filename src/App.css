@@ -213,8 +213,11 @@ main header {
 }
 
 .time-mark {
-  color: #f5f5f5;
-  font-size: 12px;
+  background-color: #e4e4e4;
+  color: #000000;
+  font-size: 13px;
+  padding: 2px 8px;
+  border-radius: 20px;
 }
 .text {
   color: rgba(0, 0, 0, 0.8);

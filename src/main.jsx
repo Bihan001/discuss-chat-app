@@ -384,7 +384,7 @@ const Main = ({ user: { user, currentContact }, signout, setCurrentChatUser, his
               <ChatInputBox />
             </main>
           ) : (
-            <Welcome />
+            <Welcome hasContacts={filteredContacts.length > 0} />
           )}
         </div>
       </div>

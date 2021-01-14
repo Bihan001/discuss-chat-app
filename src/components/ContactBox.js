@@ -20,7 +20,10 @@ const ContactBox = ({
   // }
 
   const getNotifications = (a) => {
-    if (!currentContact || (currentContact && contact.id !== currentContact.id)) return getNotificationCount(a);
+    if (!currentContact || (currentContact && contact.id !== currentContact.id)) {
+      const cnt = getNotificationCount(a);
+      if (cnt > 0) return <span className='time-mark'>{cnt}</span>;
+    }
     return null;
   };
 
@@ -36,7 +39,7 @@ const ContactBox = ({
         <div style={{ width: '100%' }}>
           <div className='contact-box-header'>
             <h3 className='contact-title'>{contact.name}</h3>
-            <span className='time-mark'>{getNotifications(contact.id)}</span>
+            {getNotifications(contact.id)}
           </div>
           <div className='last-msg'>
             {/* <img src={doubleCheck} alt='' className='icon-small' /> */}
@@ -59,7 +62,7 @@ const ContactBox = ({
         <div style={{ width: '100%' }}>
           <div className='contact-box-header'>
             <h3 className='contact-title'>{contact.name}</h3>
-            <span className='time-mark'>{getNotifications(contact.id)}</span>
+            {getNotifications(contact.id)}
           </div>
           <div className='last-msg'>
             {/* <img src={doubleCheck} alt='' className='icon-small' /> */}
