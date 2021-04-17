@@ -1,14 +1,14 @@
 import firebase from 'firebase';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCPx04ccHjjSoSvRbTe8YLIlSZZusR-pJg',
-  authDomain: 'discuss-2311c.firebaseapp.com',
-  databaseURL: 'https://discuss-2311c.firebaseio.com',
-  projectId: 'discuss-2311c',
-  storageBucket: 'discuss-2311c.appspot.com',
-  messagingSenderId: '331499613158',
-  appId: '1:331499613158:web:603f7be4727baf0aae8427',
-  measurementId: 'G-BYS1DCRQCY',
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 firebase.initializeApp(firebaseConfig);
